@@ -1,7 +1,4 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
 
 <<<<<<< HEAD
 # C extensions
@@ -170,45 +167,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-=======
-# Virtual environment
-venv/
-env/
-*.env
-*.venv
 
-# Django stuff
-db.sqlite3
-*.sqlite3
-/media/
-*.log
 
-# Static files
-/staticfiles/
-staticfiles/
-node_modules/
-
-# Local settings
-settings_local.py
-.env
-
-# VS Code
-.vscode/
-
-# JetBrains (PyCharm)
-.idea/
-
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-
-# Migrations (optional: include in repo if needed)
-**/migrations/*.py
-!**/migrations/__init__.py
-
-# Compiled translations
-*.mo
 >>>>>>> a4c3a83 (Feat: Add db local connection, Add native django authentication working, url to home page. Setting up Learning App Project QueryMinds)
 
