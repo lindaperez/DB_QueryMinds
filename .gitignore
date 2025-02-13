@@ -1,6 +1,5 @@
 # Byte-compiled / optimized / DLL files
 
-<<<<<<< HEAD
 # C extensions
 *.so
 
@@ -169,5 +168,7 @@ cython_debug/
 .pypirc
 
 
->>>>>>> a4c3a83 (Feat: Add db local connection, Add native django authentication working, url to home page. Setting up Learning App Project QueryMinds)
+# macOS
+.DS_Store
+
 
