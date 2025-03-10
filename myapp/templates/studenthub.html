@@ -1,0 +1,166 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Student Dashboard - Database Learning</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: #ffffff;-->
+<!--            color: #333;-->
+<!--            font-family: Arial, sans-serif;-->
+<!--        }-->
+<!--        .navbar {-->
+<!--            background-color: #0a3d91;-->
+<!--            padding: 15px;-->
+<!--        }-->
+<!--        .navbar-brand {-->
+<!--            color: white !important;-->
+<!--            font-weight: bold;-->
+<!--            font-size: 20px;-->
+<!--        }-->
+<!--        .navbar-text {-->
+<!--            color: white;-->
+<!--            font-size: 16px;-->
+<!--        }-->
+<!--        .container {-->
+<!--            margin-top: 30px;-->
+<!--        }-->
+<!--        .card {-->
+<!--            border-radius: 10px;-->
+<!--            border: 2px solid #d1d9e6;-->
+<!--            background-color: white;-->
+<!--            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);-->
+<!--        }-->
+<!--        .card-header {-->
+<!--            background-color: #e6eefc;-->
+<!--            color: #0a3d91;-->
+<!--            font-weight: bold;-->
+<!--            border-bottom: 2px solid #0a3d91;-->
+<!--            border-radius: 10px 10px 0 0;-->
+<!--        }-->
+<!--        .btn-primary {-->
+<!--            background-color: #0a3d91;-->
+<!--            border: none;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+<!--        .btn-primary:hover {-->
+<!--            background-color: #062c6b;-->
+<!--        }-->
+<!--        .sidebar {-->
+<!--            background-color: #f4f7fc;-->
+<!--            height: 100vh;-->
+<!--            padding: 20px;-->
+<!--            position: fixed;-->
+<!--            width: 250px;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            border-right: 2px solid #d1d9e6;-->
+<!--        }-->
+<!--        .sidebar a {-->
+<!--            color: #0a3d91;-->
+<!--            text-decoration: none;-->
+<!--            display: block;-->
+<!--            padding: 12px;-->
+<!--            font-size: 18px;-->
+<!--            border-radius: 5px;-->
+<!--        }-->
+<!--        .sidebar a:hover {-->
+<!--            background-color: #e6eefc;-->
+<!--        }-->
+<!--        .content {-->
+<!--            margin-left: 270px;-->
+<!--            padding: 20px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--    &lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--    <div class="sidebar">-->
+<!--        <h2 class="text-dark">Student Panel</h2>-->
+<!--        <a href="#">Dashboard</a>-->
+<!--        <a href="#">Courses</a>-->
+<!--        <a href="#">Profile</a>-->
+<!--        <a href="#">Settings</a>-->
+<!--        <a href="#">Logout</a>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Main Content &ndash;&gt;-->
+<!--    <div class="content">-->
+<!--        &lt;!&ndash; Top Navigation Bar &ndash;&gt;-->
+<!--        <nav class="navbar navbar-expand-lg">-->
+<!--            <div class="container">-->
+<!--                <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>-->
+<!--                <div class="navbar-text">-->
+<!--                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </nav>-->
+
+<!--        &lt;!&ndash; Student Info Section &ndash;&gt;-->
+<!--        <div class="container">-->
+<!--            <div class="row">-->
+<!--                <div class="col-md-4">-->
+<!--                    <div class="card p-3">-->
+<!--                        <h4 class="text-primary">Student Information</h4>-->
+<!--                        <p><strong>Name:</strong> John Doe</p>-->
+<!--                        <p><strong>Student ID:</strong> 20231234</p>-->
+<!--                        <p><strong>Email:</strong> johndoe@example.com</p>-->
+<!--                        <p><strong>Registration Date:</strong> 2024-01-01</p>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; Message Notification Section &ndash;&gt;-->
+<!--                    <div class="card p-3 mt-3">-->
+<!--                        <h4 class="text-primary">Message Notifications</h4>-->
+<!--                        <p>Check messages or task replies, or send a new message.</p>-->
+<!--                        <button class="btn btn-primary w-100 mb-2">View Messages</button>-->
+<!--                        <button class="btn btn-secondary w-100">Send a Message</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; Course Chapters Section &ndash;&gt;-->
+<!--                <div class="col-md-8">-->
+<!--                    <h3 class="text-secondary mb-3">Course Chapters</h3>-->
+{% extends 'template.html' %}
+
+{% block content %}
+                    <!-- Chapter 1 -->
+                    <div class="card mb-3">
+                        <div class="card-header">Chapter 1: Introduction to Databases</div>
+                        <div class="card-body">
+                            <p>This chapter covers the fundamentals of databases, including relational and non-relational databases.</p>
+                            <a href="/chapter1/" class="btn btn-primary">Start Course</a>
+                            <a href="#" class="btn btn-primary">Progress</a>
+                        </div>
+                    </div>
+
+                    <!-- Chapter 2 -->
+                    <div class="card mb-3">
+                        <div class="card-header">Chapter 2: SQL Basics</div>
+                        <div class="card-body">
+                            <p>Learn about SQL syntax, queries, data manipulation, and how to interact with relational databases.</p>
+                            <a href="/chapter2/" class="btn btn-primary">Start Course</a>
+                            <a href="#" class="btn btn-primary">Progress</a>
+                        </div>
+                    </div>
+
+                    <!-- Chapter 3 -->
+                    <div class="card mb-3">
+                        <div class="card-header">Chapter 3: Database Optimization</div>
+                        <div class="card-body">
+                            <p>Understand indexing, query optimization, and best practices for efficient database management.</p>
+                            <a href="/chapter3/" class="btn btn-primary">Start Course</a>
+                            <a href="#" class="btn btn-primary">Progress</a>
+                        </div>
+                    </div>
+{% endblock %}
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--</body>-->
+<!--</html>-->
