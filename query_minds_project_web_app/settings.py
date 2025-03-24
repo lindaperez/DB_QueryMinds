@@ -20,12 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ym^s+uqyet7%32%!r@fx@yq3$da$u-v(q-%^6f@8ora53!l-27'
-
+#SECRET_KEY = 'django-insecure-ym^s+uqyet7%32%!r@fx@yq3$da$u-v(q-%^6f@8ora53!l-27'
+SECRET_KEY = 'uw_x^lz_+mw)ju(+y(n9aaufr$et8k8r61gi1t(syzo3%^rv+l'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+'queryminds.uw.r.appspot.com', # GCP App Engine domain 
+ 'localhost', 
+ '127.0.0.1']
 
 
 # Application definition
@@ -66,6 +69,7 @@ TEMPLATES = [
             ],
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'query_minds_project_web_app.wsgi.application'
@@ -84,6 +88,7 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
 
 
 # Password validation
