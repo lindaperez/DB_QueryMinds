@@ -35,6 +35,15 @@
                 {% endfor %}
               {% endif %}
 
+              {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
               {% for field in form %}
               <div class="form-group mb-3">
                 {{ field }}
@@ -46,6 +55,10 @@
                   <label class="form-check-label text-muted" for="customCheckc1">Remember me?</label>
                 </div>
                 <a href="{% url "password_reset" %}" class="text-secondary f-w-400 mb-0">Forgot Password?</a>
+               
+              </div>
+              <div class="text-left mt-4">
+              <a href="{% url "register" %}" class="text-secondary f-w-400 mb-0">Sign Up</a>
               </div>
               <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary shadow px-sm-4">Login</button>

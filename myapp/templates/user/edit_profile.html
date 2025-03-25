@@ -54,14 +54,23 @@
          
           <form method="post">
             {% csrf_token %}
-
-
-            {{ user_form.as_p }}
-        
-            {{ instructor_form.as_p }}
           
-            <button type="submit">Save</button>
+            <!-- User Info -->
+            {{ user_form.as_p }}
+          
+            <!-- Role-specific fields -->
+            {% if request.user.userprofile.user_type == "instructor" %}
+              {{ instructor_form.as_p }}
+            {% elif request.user.userprofile.user_type == "student" %}
+              {{ student_form.as_p }}
+            {% else %}
+              <p class="text-muted">Your user role is not recognized.</p>
+            {% endif %}
+          
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary mt-3">Save</button>
           </form>
+          
  
         </div>
       </div>

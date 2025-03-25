@@ -3,8 +3,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 
 from django.conf import settings
-
-from django.shortcuts import render
 from .forms import LoginForm  
 
 
@@ -16,8 +14,16 @@ from django.contrib.auth.decorators import login_required
 
 #Instuctor Profile
 
-from myapp.forms import InstructorForm, UserForm
+from myapp.forms import InstructorForm, UserForm, StudentForm
 from myapp.models import Instructor
+
+from django.contrib.auth.models import User
+from myapp.forms import RegistrationForm
+from django.utils import timezone
+from myapp.models.profile import UserProfile
+from myapp.models.instructors import Instructor
+from myapp.models.students import Student
+
 
 def home(request):
     return render(request, 'home.html', {'message': 'Welcome to the Home Page'})
@@ -43,30 +49,61 @@ def login_view(request):
 
 # Profile 
 
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
 @login_required
 def update_profile(request):
     user = request.user
-    instructor = get_object_or_404(Instructor, user=user)
+    type_role = user.userprofile.user_type
+    student_form = None
+    instructor_form = None
+    student = None
+    instructor = None
 
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=user)
-        instructor_form = InstructorForm(request.POST, instance=instructor)
 
-        if user_form.is_valid() and instructor_form.is_valid():
-            user_form.save()
-            instructor_form.save()
-            messages.success(request, 'Your profile was updated successfully!')
-            return redirect('update_profile')  # Redirect so refresh doesn't resubmit form
-        else:
-            messages.error(request, 'Please correct the error below.')
+        if type_role == 'instructor':
+            instructor = request.user.instructor
+            instructor_form = InstructorForm(request.POST, instance=instructor)
+            if user_form.is_valid() and instructor_form.is_valid():
+                user_form.save()
+                instructor_form.save()
+                messages.success(request, 'Your profile was updated successfully!')
+                return redirect('update_profile')
+            else:
+                messages.error(request, 'Please correct the error below.')
+
+        elif type_role == 'student':
+            student = request.user.student
+            student_form = StudentForm(request.POST, instance=student)
+            if user_form.is_valid() and student_form.is_valid():
+                user_form.save()
+                student_form.save()
+                messages.success(request, 'Your profile was updated successfully!')
+                return redirect('update_profile')
+            else:
+                messages.error(request, 'Please correct the error below.')
+
     else:
         user_form = UserForm(instance=user)
-        instructor_form = InstructorForm(instance=instructor)
+
+        if type_role == 'instructor':
+            instructor = request.user.instructor
+            instructor_form = InstructorForm(instance=instructor)
+
+        elif type_role == 'student':
+            student = request.user.student
+            student_form = StudentForm(instance=student)
 
     return render(request, 'user/edit_profile.html', {
         'user_form': user_form,
+        'student_form': student_form,
         'instructor_form': instructor_form,
     })
+
 
 
 # Authentication
@@ -75,12 +112,6 @@ class UserLoginView(LoginView):
   form_class = LoginForm
 # views.py
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from myapp.forms import RegistrationForm
-from myapp.models.profile import UserProfile
-from myapp.models.instructors import Instructor
-from myapp.models.students import Student
 
 
 def register(request):
@@ -98,7 +129,7 @@ def register(request):
       if user_type == 'instructor':
         Instructor.objects.create(user=user, v_specialty='', v_bio='', n_phone='')
       elif user_type == 'student':
-        Student.objects.create(user=user, enrollment_date=None, level='')
+        Student.objects.create(id_user=user, n_gpa=0.00, d_starting_date=timezone.now(),d_join_date=timezone.now())
 
       print('Account created successfully!')
       return redirect('/accounts/login/')

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from .models import Instructor
 
+from .models import Student  
 from myapp.models.profile import UserProfile #RegisterForm
 
 
@@ -41,8 +42,11 @@ class InstructorForm(forms.ModelForm):
         fields = ['n_phone', 'v_specialty', 'v_bio']
         widgets = {
             'n_phone': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Your phone number'
+            'class': 'form-control',
+            'placeholder': '+1 (555) 123-4567',
+            'type': 'tel',  # use telephone input for mobile support
+            'pattern': r'^\+?[0-9\s\-\(\)]{7,20}$',  # simple pattern for validation
+            'title': 'Enter a valid phone number (e.g., +1 (555) 123-4567)'
             }),
             'v_specialty': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -83,10 +87,6 @@ class UserForm(forms.ModelForm):
 # Register Users as 
 
 # myapp/forms.py
-from django.contrib.auth.models import User
-from myapp.models.profile import UserProfile
-
-
 class RegistrationForm(UserCreationForm):
     user_type = forms.ChoiceField(choices=UserProfile.USER_TYPE_CHOICES)
 
@@ -108,3 +108,29 @@ class RegistrationForm(UserCreationForm):
         return user_type
 
 
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['n_gpa', 'd_starting_date', 'd_join_date']
+        widgets = {
+            'n_gpa': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'placeholder': 'Your GPA (e.g. 3.75)'
+            }),
+            'd_starting_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'd_join_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+        }
+        labels = {
+            'n_gpa': 'GPA',
+            'd_starting_date': 'Starting Date',
+            'd_join_date': 'Join Date',
+        }
+        
+        
