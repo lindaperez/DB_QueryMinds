@@ -1,0 +1,94 @@
+{% load i18n static admin_datta %}
+
+
+<nav class="pc-sidebar">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a href="{% url "home" %}" class="b-brand text-primary">
+        <!-- ========   Change your logo from here   ============ -->
+        QueryMinds
+      </a>
+    </div>
+    <div class="navbar-content">
+
+      <ul class="pc-navbar">
+
+        <li class="pc-item pc-caption">
+          <label>User</label>
+          <i data-feather="monitor"></i>
+        </li> 
+        {% if not request.user.is_authenticated %}
+        <li class="pc-item">
+          <a href="{% url "login" %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="lock"></i></span>
+            <span class="pc-mtext">Login</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{% url "register" %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="user-plus"></i></span>
+            <span class="pc-mtext">Register</span>
+          </a>
+        </li>
+        {% else %}
+        <li class="pc-item">
+          <a href="{% url "update_profile" %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="lock"></i></span>
+            <span class="pc-mtext">Edit Profile</span>
+          </a>
+        </li>
+        <li class="pc-item">
+          <a href="{% url "logout" %}" class="pc-link">
+            <span class="pc-micon">
+              <svg class="pc-icon me-2">
+                <use xlink:href="#custom-logout-1-outline"></use>
+              </svg>
+            </span>
+            <span class="pc-mtext">Logout</span>
+          </a>
+        </li>
+        {% endif %}
+
+
+      {% if request.user.is_superuser %}  
+
+      <li class="pc-item pc-caption">
+        <label>ADMIN</label>
+      </li>
+      <li class="pc-item">
+        <a href="{% url "home" %}" class="pc-link">
+          <span class="pc-micon">
+            <i data-feather="settings"></i>
+          </span>
+          <span class="pc-mtext">Superuser UI</span>
+        </a>
+      </li>
+      
+      <!-- superuser guard -->  
+      {% endif %}
+
+        <li class="pc-item pc-caption">
+          <label>Navigation</label>
+        </li>
+        <li class="pc-item">
+          <a href="{% url "home" %}" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="home"></i>
+            </span>
+            <span class="pc-mtext">Dashboard</span>
+          </a>
+        </li>
+       
+      
+    
+    
+      
+      
+        
+      </ul>
+
+  
+
+    </div>
+  </div>
+</nav>

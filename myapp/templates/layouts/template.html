@@ -1,0 +1,91 @@
+
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Instructor Views {% endblock title %}
+
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">
+                                <a href="/">Home</a>
+                            </h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item">
+                     
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+
+
+      
+         <!-- Top Navigation Bar -->
+         <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
+                <div class="navbar-text">
+                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
+                </div>
+            </div>
+        </nav>
+
+         <!-- Student Info Section -->
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                    <div class="card p-3">
+                        <h4 class="text-primary">Student Information</h4>
+                        <div><strong>Name:</strong> John Doe</div>
+                        <div><strong>Student ID:</strong> 20231234</div>
+                        <div><strong>Email:</strong> johndoe@example.com</div>
+                        <div><strong>Registration Date:</strong> 2024-01-01</div>
+                    </div>
+
+                    <!-- Message Notification Section -->
+                    <div class="card p-3 mt-3">
+                        <h4 class="text-primary">Message Notifications</h4>
+                        <p>Check messages or task replies, or send a new message.</p>
+                        <button class="btn btn-primary w-100 mb-2">View Messages</button>
+                        <button class="btn btn-secondary w-100">Send a Message</button>
+                    </div>
+                    <div class="card p-3 mt-3">
+                        <h4 class="text-primary">LLM Teacher</h4>
+                        <p>What do you want to know?</p>
+                        <button class="btn btn-primary w-100 mb-2">Searching Information</button>
+                        <button class="btn btn-secondary w-100">Learning SQL</button>
+                    </div>
+                </div>
+                </div>
+                <!-- Course Chapters Section -->
+                <div class="col-md-8">
+                    <h3 class="text-secondary mb-3">Course Chapters</h3>
+                    {% block contentCourses %}{% endblock %}
+                </div>
+
+            </div>
+   
+
+    </div>
+</div> 
+
+
+
+
+{% block extra_js %}
+
+<!-- ADD JS Here -->
+
+{% endblock extra_js %}

@@ -1,14 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    <h1>{{ message }}</h1>
-    <p>This is the homepage.</p>
-    <a href="{% url 'login' %}">Log In</a>
-</body>
-</html>
 
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Instructor Views {% endblock title %}
+
+{% block content %}
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">
+                                <a href="/">Home</a>
+                            </h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item">
+                     
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+
+
+      
+         <!-- Top Navigation Bar -->
+         <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
+                <div class="navbar-text">
+                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
+                </div>
+            </div>
+        </nav>
+
+         <!-- Student Info Section -->
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                    <div class="card p-3">
+                        <h4 class="text-primary">Student Information</h4>
+                        <div><strong>Name:</strong> John Doe</div>
+                        <div><strong>Student ID:</strong> 20231234</div>
+                        <div><strong>Email:</strong> johndoe@example.com</div>
+                        <div><strong>Registration Date:</strong> 2024-01-01</div>
+                    </div>
+
+                    <!-- Message Notification Section -->
+                    <div class="card p-3 mt-3">
+                        <h4 class="text-primary">Message Notifications</h4>
+                        <p>Check messages or task replies, or send a new message.</p>
+                        <button class="btn btn-primary w-100 mb-2">View Messages</button>
+                        <button class="btn btn-secondary w-100">Send a Message</button>
+                    </div>
+                    <div class="card p-3 mt-3">
+                        <h4 class="text-primary">LLM Teacher</h4>
+                        <p>What do you want to know?</p>
+                        <button class="btn btn-primary w-100 mb-2">Searching Information</button>
+                        <button class="btn btn-secondary w-100">Learning SQL</button>
+                    </div>
+                </div>
+                </div>
+                <!-- Course Chapters Section -->
+                <div class="col-md-8">
+                    <h2 class="text-primary">Chapter 1: Introduction to Databases</h2>
+                    <div class="card p-3">
+                        <h4>Course Content</h4>
+                        <p>Databases are structured collections of data that are stored and managed electronically. They enable efficient data retrieval, storage, and manipulation.</p>
+                        <p>Relational databases use structured tables to store data, with relationships between different tables established using primary and foreign keys.</p>
+                        <p>Some common database management systems (DBMS) include MySQL, PostgreSQL, Oracle, and MongoDB.</p>
+                        <p>Understanding how databases function is crucial for modern applications, ranging from web development to big data analytics.</p>
+                        <a href="quiz.html" class="btn btn-primary">Start Test</a>
+                    </div>
+                    <h2 class="text-primary">Chapter 2: SQL Basics</h2>
+                    <div class="card p-3">
+                    <h4>Course Content</h4>
+                    <p>SQL (Structured Query Language) is the standard language for managing and manipulating relational databases.</p>
+                    <p>Common SQL commands include SELECT, INSERT, UPDATE, DELETE, and CREATE, which allow users to query and modify data efficiently.</p>
+                    <p>SQL allows filtering data using conditions like WHERE, ORDER BY, and GROUP BY to extract meaningful insights from large datasets.</p>
+                    <p>Indexes and joins enhance SQL performance, making database queries faster and more efficient.</p>
+                    <a href="quiz.html" class="btn btn-primary">Start Test</a>
+                    
+                </div>
+                <h2 class="text-primary">Chapter 3: Database Optimization</h2>
+                <div class="card p-3">
+                    <h4>Course Content</h4>
+                    <p>Database optimization is crucial for improving performance, reducing query execution time, and enhancing scalability.</p>
+                    <p>Indexing is a technique used to speed up data retrieval by creating efficient access paths to database records.</p>
+                    <p>Normalization minimizes redundancy and ensures data integrity by structuring databases in a way that reduces anomalies.</p>
+                    <p>Effective caching strategies and query optimization techniques help enhance the overall efficiency of database systems.</p>
+                    <a href="quiz.html" class="btn btn-primary">Start Test</a>
+                </div>
+                </div>
+
+            </div>
+   
+
+    </div>
+</div> 
+
+{% endblock content %}
+
+
+{% block extra_js %}
+
+<!-- ADD JS Here -->
+
+{% endblock extra_js %}
