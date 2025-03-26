@@ -133,4 +133,68 @@ class StudentForm(forms.ModelForm):
             'd_join_date': 'Join Date',
         }
         
+
+# forms for the Instuctor create a Learning Path
+from django import forms
+from .models import LearningChapter
+from django_quill.widgets import QuillWidget
+
+class ChapterForm(forms.ModelForm):
+    class Meta:
+        model = LearningChapter
+        fields = ['v_content', 'd_deadline', 'f_weight']
         
+        widgets = {
+           'v_content': QuillWidget(), 
+            'd_deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'f_weight': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'v_content': 'Chapter Content',
+            'd_deadline': 'Deadline',
+            'f_weight': 'Weight (%)',
+        }
+
+from .models import Exercise
+
+class ExerciseForm(forms.ModelForm):
+    class Meta:
+        model = Exercise
+        fields = ['description', 'f_weight', 'd_deadline', 'id_difficultylevel', 'n_max_attempts']
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+          
+            'f_weight': forms.NumberInput(attrs={'class': 'form-control'}),
+            'd_deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'id_difficultylevel': forms.Select(attrs={'class': 'form-control'}),
+            'n_max_attempts': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'description': 'Question / Description',
+            'f_weight': 'Weight (%)',
+            'd_deadline': 'Deadline',
+            'id_difficultylevel': 'Difficulty Level',
+            'n_max_attempts': 'Max Attempts',
+        }
+
+from .models import Evaluation
+
+class EvaluationForm(forms.ModelForm):
+    class Meta:
+        model = Evaluation
+        fields = ['f_weight', 'd_deadline']
+        widgets = {
+            'f_weight': forms.NumberInput(attrs={'class': 'form-control'}),
+            'd_deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
+        labels = {
+            'f_weight': 'Evaluation Weight (%)',
+            'd_deadline': 'Deadline',
+        }
+class EvaluationAssignForm(forms.Form):
+    id_exercise = forms.IntegerField(widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def __init__(self, *args, **kwargs):
+        exercises = kwargs.pop('exercises')
+        super().__init__(*args, **kwargs)
+        self.fields['id_exercise'].widget.choices = [(e.id_exercise, e.description[:60]) for e in exercises]

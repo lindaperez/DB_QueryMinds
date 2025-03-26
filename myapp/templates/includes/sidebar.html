@@ -70,6 +70,7 @@
         <li class="pc-item pc-caption">
           <label>Navigation</label>
         </li>
+        {% if request.user.userprofile.user_type == "instructor" %} 
         <li class="pc-item">
           <a href="{% url "home" %}" class="pc-link">
             <span class="pc-micon">
@@ -78,6 +79,15 @@
             <span class="pc-mtext">Dashboard</span>
           </a>
         </li>
+        <li class="pc-item">
+          <a href="{% url "chapter_dashboard" %}" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="home"></i>
+            </span>
+            <span class="pc-mtext"> Instructor Dashboard </span>
+          </a>
+        </li>
+        {% endif %}
        
       
     

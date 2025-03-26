@@ -197,3 +197,105 @@ def sample_page(request):
     'segment': 'sample_page',
   }
   return render(request, 'pages/sample-page.html', context)
+
+
+
+
+# Views for Learning Chapter for Instructor and Student
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Instructor, LearningChapter, Exercise, Evaluation, MultipleOption, ChapterExercise, ChapterEvaluation, EvaluationExercise
+from .forms import ChapterForm, ExerciseForm, EvaluationForm, EvaluationAssignForm
+from django.core.exceptions import PermissionDenied
+
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import date
+from django.contrib import messages
+
+@login_required
+def instructor_dashboard(request):
+    user = request.user
+    try:
+        instructor = Instructor.objects.get(user=user)
+    except Instructor.DoesNotExist:
+        raise PermissionDenied("You must be an instructor to access this page.")
+
+    # Forms
+    chapter_form = ChapterForm(request.POST or None)
+    exercise_form = ExerciseForm()
+    evaluation_form = EvaluationForm()
+
+    # Handle New Chapter
+    if request.method == 'POST' and 'create_chapter' in request.POST:
+        if chapter_form.is_valid():
+            chapter = chapter_form.save(commit=False)
+            chapter.instructor = instructor
+            chapter.d_created_at = date.today()
+            chapter.save()
+            messages.success(request, "✅ New learning chapter created successfully.")
+            return redirect('chapter_dashboard')
+
+    # Handle New Exercise
+    if request.method == 'POST' and 'create_exercise' in request.POST:
+        chapter_id = request.POST.get('chapter_id')
+        chapter = get_object_or_404(LearningChapter, pk=chapter_id)
+        exercise_form = ExerciseForm(request.POST)
+        if exercise_form.is_valid():
+            exercise = exercise_form.save()
+            ChapterExercise.objects.create(id_learningchapter=chapter, id_exercise=exercise)
+            for i in range(1, 5):
+                opt_text = request.POST.get(f'option_text_{i}')
+                is_correct = request.POST.get(f'option_correct_{i}') == 'on'
+                if opt_text:
+                    MultipleOption.objects.create(
+                        id_exercise=exercise,
+                        v_option=opt_text,
+                        b_iscorrect=is_correct
+                    )
+            messages.success(request, "📝 Exercise added to chapter.")
+            return redirect('chapter_dashboard')
+
+    # Handle New Evaluation
+    if request.method == 'POST' and 'create_evaluation' in request.POST:
+        chapter_id = request.POST.get('chapter_id')
+        chapter = get_object_or_404(LearningChapter, pk=chapter_id)
+        evaluation_form = EvaluationForm(request.POST)
+        if evaluation_form.is_valid():
+            evaluation = evaluation_form.save()
+            ChapterEvaluation.objects.create(id_learningchapter=chapter, id_evaluation=evaluation)
+            messages.success(request, "📊 Evaluation created and linked to chapter.")
+            return redirect('chapter_dashboard')
+
+    # Handle Assign Exercise to Evaluation
+    if request.method == 'POST' and 'assign_exercise' in request.POST:
+        evaluation_id = request.POST.get('evaluation_id')
+        evaluation = get_object_or_404(Evaluation, pk=evaluation_id)
+        exercise_id = request.POST.get('id_exercise')
+        exercise = get_object_or_404(Exercise, pk=exercise_id)
+        EvaluationExercise.objects.create(id_evaluation=evaluation, id_exercise=exercise)
+        messages.success(request, "➕ Exercise assigned to evaluation.")
+        return redirect('chapter_dashboard')
+
+    # Load Dashboard Data
+    chapters = LearningChapter.objects.filter(instructor=instructor)
+    for chapter in chapters:
+        chapter.exercises = Exercise.objects.filter(
+            id_exercise__in=ChapterExercise.objects.filter(id_learningchapter=chapter).values_list('id_exercise', flat=True)
+        ).prefetch_related('options')
+
+        chapter.evaluations = Evaluation.objects.filter(
+            id_evaluation__in=ChapterEvaluation.objects.filter(id_learningchapter=chapter).values_list('id_evaluation', flat=True)
+        )
+        for ev in chapter.evaluations:
+            ev.exercises = Exercise.objects.filter(
+                id_exercise__in=EvaluationExercise.objects.filter(id_evaluation=ev).values_list('id_exercise', flat=True)
+            )
+            
+
+    return render(request, 'instructor/chapter_dashboard.html', {
+        'chapters': chapters,
+        'chapter_form': chapter_form,
+        'exercise_form': exercise_form,
+        'evaluation_form': evaluation_form,
+    })

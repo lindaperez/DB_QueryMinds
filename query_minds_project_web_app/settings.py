@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
-    'core'
+    'core',
+    'django_quill', # For HTML learning_chapter content 
 ]
 
 MIDDLEWARE = [
@@ -68,11 +69,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+   
             ],
         },
     },
     
 ]
+
 
 WSGI_APPLICATION = 'query_minds_project_web_app.wsgi.application'
 
@@ -88,6 +91,9 @@ DATABASES = {
         'PASSWORD': 'PhT<\[*673._c7V+',
         'HOST': '34.169.163.169',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET NAMES 'utf8mb4'",
+        },
     }
 }
 

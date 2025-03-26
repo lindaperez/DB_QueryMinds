@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learning Chapter Dashboard</title>
+</head>
+<body>
+
+  <h1>📘 Learning Chapter Dashboard</h1>
+
+  <!-- =============== CREATE CHAPTER =============== -->
+  <h2>➕ Create New Chapter</h2>
+  <form method="post">
+    {% csrf_token %}
+    <p>Content:<br>
+      <textarea name="v_content" rows="2" cols="80">Intro to SQL queries and basic syntax.</textarea>
+    </p>
+    <p>Deadline: <input type="date" name="d_deadline" value="2025-04-10"></p>
+    <p>Weight: <input type="number" name="f_weight" value="20.00">%</p>
+    <button type="submit">Create Chapter</button>
+  </form>
+
+  <hr>
+
+  <!-- =============== CHAPTER 1 =============== -->
+  <div style="border: 1px solid #999; padding: 15px; margin-bottom: 30px;">
+    <h2>📚 Chapter 1: Intro to SQL</h2>
+    <p><strong>Deadline:</strong> 2025-04-10</p>
+    <p><strong>Weight:</strong> 20.00%</p>
+    <p><strong>Description:</strong> Learn the basics of SQL including SELECT, WHERE, and ORDER BY.</p>
+
+    <!-- Add Exercise -->
+    <h3>➕ Add Exercise</h3>
+    <form>
+        {% csrf_token %}
+      <p>Question:<br>
+        <textarea rows="3" cols="80">Write a query to retrieve all customers from the "customers" table.</textarea>
+      </p>
+      <p>Starter SQL (optional):<br>
+        <textarea rows="2" cols="80">SELECT * FROM customers;</textarea>
+      </p>
+
+      <p>
+        Difficulty:
+        <select>
+          <option>Basic</option>
+          <option>Intermediate</option>
+        </select>
+        Weight: <input type="number" value="10.00">%<br>
+        Deadline: <input type="date" value="2025-04-15">
+        Max Attempts: <input type="number" value="3">
+      </p>
+
+      <h4>📋 Multiple Choice Options</h4>
+      <ul>
+        <li><input type="checkbox" checked> SELECT * FROM customers; ✔</li>
+        <li><input type="checkbox"> SELECT ALL customers;</li>
+        <li><input type="checkbox"> GET customers;</li>
+        <li><input type="checkbox"> RETRIEVE * customers;</li>
+      </ul>
+
+      <button type="submit">Add Exercise</button>
+    </form>
+
+    <!-- Exercises -->
+    <h3>📝 Exercises</h3>
+
+    <div style="margin-bottom: 10px;">
+      <strong>Exercise 1 (MCQ + SQL):</strong><br>
+      Q: Write a query to retrieve all customers from the "customers" table.<br>
+      Starter SQL: <code>SELECT * FROM customers;</code><br>
+      Weight: 10.00% | Deadline: 2025-04-15 | Attempts: 3<br>
+      <em>Options:</em>
+      <ul>
+        <li>SELECT * FROM customers; ✔</li>
+        <li>SELECT ALL customers;</li>
+        <li>GET customers;</li>
+        <li>RETRIEVE * customers;</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- =============== CHAPTER 2 =============== -->
+  <div style="border: 1px solid #999; padding: 15px; margin-bottom: 30px;">
+    <h2>📚 Chapter 2: Advanced Joins</h2>
+    <p><strong>Deadline:</strong> 2025-05-01</p>
+    <p><strong>Weight:</strong> 25.00%</p>
+    <p><strong>Description:</strong> Learn INNER JOIN, LEFT JOIN, and aggregations.</p>
+
+    <!-- Add Exercise -->
+    <h3>➕ Add Exercise</h3>
+    <form>
+        {% csrf_token %}
+      <p>Question:<br>
+        <textarea rows="3" cols="80">Retrieve the names of departments with more than 5 employees.</textarea>
+      </p>
+      <p>Starter SQL:<br>
+        <textarea rows="3" cols="80">SELECT department_name FROM departments WHERE (SELECT COUNT(*) FROM employees WHERE employees.department_id = departments.id) > 5;</textarea>
+      </p>
+
+      <p>
+        Difficulty: <select><option>Intermediate</option></select>
+        Weight: <input type="number" value="15.00">%<br>
+        Deadline: <input type="date" value="2025-05-15">
+        Max Attempts: <input type="number" value="3">
+      </p>
+
+      <p>No multiple choice options provided.</p>
+      <button type="submit">Add Exercise</button>
+    </form>
+
+    <!-- Exercises -->
+    <h3>📝 Exercises</h3>
+    <div style="margin-bottom: 10px;">
+      <strong>Exercise 1 (SQL-only):</strong><br>
+      Q: Retrieve the names of departments with more than 5 employees.<br>
+      SQL:<br>
+      <code>SELECT department_name FROM departments WHERE (SELECT COUNT(*) FROM employees WHERE employees.department_id = departments.id) > 5;</code><br>
+      Weight: 15.00% | Deadline: 2025-05-15 | Attempts: 3
+    </div>
+  </div>
+
+  <!-- =============== EVALUATION =============== -->
+  <div style="border: 2px dashed #666; padding: 15px;">
+    <h2>🧪 Evaluation: Quiz 1</h2>
+    <p><strong>Chapter:</strong> Intro to SQL</p>
+    <p><strong>Weight:</strong> 30.00%</p>
+    <p><strong>Deadline:</strong> 2025-04-20</p>
+
+    <!-- Assign Exercises -->
+    <h4>➕ Add Exercises to This Evaluation</h4>
+    <form>
+        {% csrf_token %}
+      <label>Select an Exercise:</label>
+      <select>
+        <option>Exercise 1: Write a query to retrieve all customers...</option>
+      </select>
+      <button type="submit">Add to Evaluation</button>
+    </form>
+
+    <!-- Included Exercises -->
+    <h4>Included Exercises</h4>
+    <ul>
+      <li>Exercise 1: Write a query to retrieve all customers...</li>
+    </ul>
+  </div>
+
+</body>
+</html>

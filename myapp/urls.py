@@ -19,7 +19,6 @@ urlpatterns = [
         ),
         name='login'
     ),
-    #path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('chapter1/',views.chapter1,name='chapter1'),
     path('chapter2/',views.chapter2,name='chapter2'),
     path('chapter3/', views.chapter3, name='chapter3'),
@@ -28,8 +27,6 @@ urlpatterns = [
     
     
     #Authentication 
-    
-
     path('accounts/logout/', views.logout_view, name='logout'),
     path('accounts/register/', views.register, name='register'),
     path('accounts/password-change/', views.UserPasswordChangeView.as_view(), name='password_change'),
@@ -45,13 +42,15 @@ urlpatterns = [
     path('accounts/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
         ), name='password_reset_complete'),
-
-
     # Components
     path('color/', views.color, name='color'),
     path('typography/', views.typography, name='typography'),
     path('feather-icon/', views.icon_feather, name='icon_feather'),
     path('sample-page/', views.sample_page, name='sample_page'),
+    
+    # Learning Path for Instructor and Student
+    
+     path('dashboard/', views.instructor_dashboard, name='chapter_dashboard'),
 
 
 
