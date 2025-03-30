@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'core',
-    'django_quill', # For HTML learning_chapter content 
+   
+    'ckeditor',
 ]
 
 MIDDLEWARE = [

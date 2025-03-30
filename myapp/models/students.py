@@ -11,7 +11,14 @@ from django.contrib.auth.models import User
 
 class Student(models.Model):
     id_student = models.AutoField(primary_key=True)
-    id_user = models.OneToOneField(User, models.DO_NOTHING, db_column='id_user', blank=True, null=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.DO_NOTHING,
+        db_column='id_user',
+        blank=True,
+        null=True
+    )
+    
     n_gpa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
     d_starting_date = models.DateField()
     d_join_date = models.DateField()

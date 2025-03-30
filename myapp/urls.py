@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import student_learning_view  # Import student_learning_view
 from django.contrib.auth import views as auth_views
 from .forms import CustomLoginForm  # Import CustomLoginForm
 
@@ -48,12 +49,40 @@ urlpatterns = [
     path('feather-icon/', views.icon_feather, name='icon_feather'),
     path('sample-page/', views.sample_page, name='sample_page'),
     
-    # Learning Path for Instructor and Student
+    # Manage Learning Path for Instructor and Student
     
      path('dashboard/', views.instructor_dashboard, name='chapter_dashboard'),
 
+    #  Student Learning
+   
+    path("learning-path/", views.student_learning_view, name="student_learning_view"),
+    path('submit-answer/', views.submit_answer, name='submit_answer'),
 
+   
+   
+    #path('student/chapter/<int:chapter_id>/', views.chapter_detail, name='chapter_detail'), 
 
+    # Student learning interface
+    #path('learning/', views.student_learning_path, name='student_learning_path'),
+
+    # API endpoint for submitting answers (can be AJAX)
+    #path('learning/submit-answer/', views.submit_answer, name='submit_answer'),
+
+    # Chapter progress
+    #path('learning/chapter-progress/', views.chapter_progress, name='chapter_progress'),
+
+    # Messaging (if needed)
+    #path('messages/', views.message_center, name='message_center'),
+
+    # Instructor course management (optional depending on progress)
+    #path('instructor/courses/', views.instructor_courses, name='instructor_courses'),
+
+    # Student course enrollment
+    #path('student/enroll/', views.enroll_course, name='enroll_course'),
+
+    # View course details
+    #path('course/<int:course_id>/', views.course_detail, name='course_detail'),
+    
 ]
 
 
