@@ -16,8 +16,9 @@
           <div class="col-md-12">
             <div class="page-header-title">
               <h5 class="m-b-10">
-                <a href="/">Manage Learning Chapter</a>
+                <a href="/"> 📚 Manage Learning Chapter</a>
               </h5>
+        
             </div>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">Instructor Learning Path</li>
@@ -121,14 +122,14 @@
 
             
             
-            <div id="chapter-edit-{{ chapter.id_learningchapter }}" class="form-toggle" style="display: block;">
+            <div id="chapter-edit-{{ chapter.id_learningchapter }}" class="form-toggle" style="display:none;"">
 
               
                 <h5 class="text-primary">✏️ Edit Chapter</h5>
                 <div class="card p-3 mb-4">
          
                   {{ chapter.edit_form.media }}
-                  <form method="post">
+                  <form method="post" >
                     {% csrf_token %}
             
                     {{ chapter.edit_form.non_field_errors }}
@@ -303,7 +304,6 @@
 
 
 {% block extra_js %}
-
 
   <script>
     function toggleEdit(id) {

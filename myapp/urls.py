@@ -57,6 +57,7 @@ urlpatterns = [
    
     path("learning-path/", views.student_learning_view, name="student_learning_view"),
     path('submit-answer/', views.submit_answer, name='submit_answer'),
+    path('student/mark_chapter_read/', views.mark_chapter_read, name='mark_chapter_read'),
 
    
    

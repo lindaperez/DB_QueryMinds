@@ -593,3 +593,37 @@ def submit_answer(request):
         return redirect('student_learning_view')
 
     return redirect('student_learning_view')
+
+from django.http import JsonResponse
+from django.utils.timezone import now
+from .models import ChapterStudent, LearningChapter, Student
+from django.http import JsonResponse
+from django.utils.timezone import now
+from .models import ChapterStudent, LearningChapter, Student
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def mark_chapter_read(request):
+    if request.method == 'POST':
+        chapter_id = request.POST.get('chapter_id')
+        user = request.user
+        try:
+            student = Student.objects.get(user=user)
+            chapter = LearningChapter.objects.get(pk=chapter_id)
+        except (Student.DoesNotExist, LearningChapter.DoesNotExist):
+            return JsonResponse({'success': False, 'message': 'Invalid student or chapter.'})
+
+        # Use correct field names from your model
+        chapter_student, created = ChapterStudent.objects.get_or_create(
+            id_student=student,
+            id_learningchapter=chapter,
+            defaults={'d_begin': now().date()}
+        )
+
+        if not chapter_student.d_finish:
+            chapter_student.d_finish = now().date()
+            chapter_student.save()
+
+        return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
