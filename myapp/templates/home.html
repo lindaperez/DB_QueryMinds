@@ -62,10 +62,15 @@
                         <button class="btn btn-secondary w-100">Send a Message</button>
                     </div>
                     <div class="card p-3 mt-3">
-                        <h4 class="text-primary">LLM Teacher</h4>
-                        <p>What do you want to know?</p>
-                        <button class="btn btn-primary w-100 mb-2">Searching Information</button>
-                        <button class="btn btn-secondary w-100">Learning SQL</button>
+                        <h4 class="text-primary">QueryLLM Assistant</h4>
+                        <p>What can I help U? 🌞</p>
+                        {% if request.user.userprofile.user_type == "student" %}
+                        <a href="{% url 'llm_interact_student' %}" class="btn btn-primary w-100 mb-2">😎 Practice Queries with QueryLLM</a>
+                        <a href="{% url 'llm_view_record' %}" class="btn btn-secondary w-100">📝 View Your Past Practicing Report</a>
+                        {% elif request.user.userprofile.user_type == "instructor" %}
+                        <a href="{% url 'llm_view_record_ins' %}" class="btn btn-primary w-100 mb-2">📈 View Student Practice Record</a>
+                        <a href="{% url 'llm_AIassist' %}" class="btn btn-secondary w-100">📝 Final Report and AI-Analysis</a>
+                        {% endif %}
                     </div>
                 </div>
                 </div>
