@@ -207,11 +207,17 @@ def studenthub(request):
 def instructor_dashboard(request):
     
     message_already_handled = False
-    user = request.user
+    django_user = request.user
+    auth_user = get_auth_user(django_user)
+
+    if not auth_user:
+        raise PermissionDenied("No matching AuthUser found.")
+
     try:
-        instructor = Instructor.objects.get(user=user)
+        instructor = Instructor.objects.get(user=auth_user)
     except Instructor.DoesNotExist:
         raise PermissionDenied("You must be an instructor to access this page.")
+
 
     # Forms
     chapter_form = ChapterForm(request.POST or None)
