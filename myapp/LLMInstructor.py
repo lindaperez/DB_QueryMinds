@@ -13,7 +13,7 @@ import json
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 
-client = OpenAI(api_key="...")  # Add OpenAI API key
+client = OpenAI(api_key="")  # Add OpenAI API key
 MODEL_NAME = "gpt-4"
 
 logger = logging.getLogger(__name__)
