@@ -803,7 +803,8 @@ from .models import (
 
 @login_required
 def course_performance(request):
-    instructor = get_object_or_404(Instructor, user=request.user)
+    auth_user = get_auth_user(request.user)
+    instructor = get_object_or_404(Instructor, user=auth_user)
     print(f"INSTRUCTOR {instructor}")
     course = get_object_or_404(Course, pk=6)
     print(f"COURSE {course}")
