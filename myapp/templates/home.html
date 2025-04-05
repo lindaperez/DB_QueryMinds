@@ -36,8 +36,8 @@
             <div class="container">
                 <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
                 <div class="navbar-text">
-                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
-                </div>
+                    Student Name: <strong>{{ user.first_name }} {{ user.last_name }}</strong> | Account ID: <strong>DB{{ user.id }}</strong>
+                </div>                
             </div>
         </nav>
 
@@ -48,29 +48,23 @@
                     <div>
                     <div class="card p-3">
                         <h4 class="text-primary">Student Information</h4>
-                        <div><strong>Name:</strong> John Doe</div>
-                        <div><strong>Student ID:</strong> 20231234</div>
-                        <div><strong>Email:</strong> johndoe@example.com</div>
-                        <div><strong>Registration Date:</strong> 2024-01-01</div>
+                        <div><strong>Name:</strong> {{ first_name }} {{ last_name }}</div>
+                        <div><strong>Student ID:</strong> {{ student_id }}</div>
+                        <div><strong>Email:</strong> {{ email }}</div>
+                        <div><strong>Registration Date:</strong> {{ registration_date }}</div>
                     </div>
-
                     <!-- Message Notification Section -->
                     <div class="card p-3 mt-3">
                         <h4 class="text-primary">Message Notifications</h4>
                         <p>Check messages or task replies, or send a new message.</p>
-                        <button class="btn btn-primary w-100 mb-2">View Messages</button>
-                        <button class="btn btn-secondary w-100">Send a Message</button>
+                        <a href="{% url 'inbox' %}" class="btn btn-primary w-100 mb-2">View Messages</a>
+                        <a href="{% url 'send_message' %}" class="btn btn-secondary w-100">Send a Message</a>
                     </div>
                     <div class="card p-3 mt-3">
-                        <h4 class="text-primary">QueryLLM Assistant</h4>
-                        <p>What can I help U? 🌞</p>
-                        {% if request.user.userprofile.user_type == "student" %}
-                        <a href="{% url 'llm_interact_student' %}" class="btn btn-primary w-100 mb-2">😎 Practice Queries with QueryLLM</a>
-                        <a href="{% url 'llm_view_record' %}" class="btn btn-secondary w-100">📝 View Your Past Practicing Report</a>
-                        {% elif request.user.userprofile.user_type == "instructor" %}
-                        <a href="{% url 'llm_view_record_ins' %}" class="btn btn-primary w-100 mb-2">📈 View Student Practice Record</a>
-                        <a href="{% url 'llm_AIassist' %}" class="btn btn-secondary w-100">📝 Final Report and AI-Analysis</a>
-                        {% endif %}
+                        <h4 class="text-primary">LLM Teacher</h4>
+                        <p>What do you want to know?</p>
+                        <button class="btn btn-primary w-100 mb-2">Searching Information</button>
+                        <button class="btn btn-secondary w-100">Learning SQL</button>
                     </div>
                 </div>
                 </div>

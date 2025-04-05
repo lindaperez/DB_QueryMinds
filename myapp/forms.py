@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from .models import Instructor
 
-from .models import Student  
+from myapp.models import Student
+
 from myapp.models.profile import UserProfile #RegisterForm
 
 
@@ -65,9 +66,10 @@ class InstructorForm(forms.ModelForm):
         }
 
 # User form 
+from myapp.models.auth_user import AuthUser
 class UserForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = AuthUser
         fields = ['first_name', 'last_name', 'email']
         widgets = {
             'first_name': forms.TextInput(attrs={
@@ -137,23 +139,17 @@ class StudentForm(forms.ModelForm):
 # forms for the Instuctor create a Learning Path
 from django import forms
 from .models import LearningChapter
-from ckeditor.widgets import CKEditorWidget
-
+from django_quill.widgets import QuillWidget
 
 class ChapterForm(forms.ModelForm):
-    v_content = forms.CharField(
-        widget=CKEditorWidget(config_name='custom_toolbar'),
-        label="Chapter Content"
-    )
-
     class Meta:
         model = LearningChapter
         fields = ['v_content', 'd_deadline', 'f_weight']
         
         widgets = {
+           'v_content': QuillWidget(), 
             'd_deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'f_weight': forms.NumberInput(attrs={'class': 'form-control'}),
-            
         }
         labels = {
             'v_content': 'Chapter Content',
@@ -205,41 +201,54 @@ class EvaluationAssignForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['id_exercise'].widget.choices = [(e.id_exercise, e.description[:60]) for e in exercises]
 
-
-#Student Learning forms 
-
+from myapp.models.message import Message
 from django import forms
 
-class AnswerForm(forms.Form):
-    answer = forms.CharField(
-        label="Your Answer",
-        widget=forms.Textarea(attrs={
-            'rows': 4,
-            'cols': 60,
-            'placeholder': 'Write your answer here...',
-            'class': 'form-control'
-        }),
-        required=True
-    )
-    exercise_id = forms.IntegerField(widget=forms.HiddenInput())
-    
-
-from django.forms import modelformset_factory, inlineformset_factory
-from .models import MultipleOption, Exercise
-
-class MultipleOptionForm(forms.ModelForm):
+class MessageForm(forms.ModelForm):
     class Meta:
-        model = MultipleOption
-        fields = ['v_option', 'b_iscorrect']
+        model = Message
+        fields = ['receiver', 'subject', 'content']
         widgets = {
-            'v_option': forms.TextInput(attrs={'class': 'form-control mb-1'}),
-            'b_iscorrect': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'receiver': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Receiver username or email'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Type your message here...',
+                'rows': 4
+            }),
+        }
+        labels = {
+            'receiver': 'To',
+            'subject': 'Subject',
+            'content': 'Message',
         }
 
-MultipleOptionFormSet = inlineformset_factory(
-    Exercise,
-    MultipleOption,
-    form=MultipleOptionForm,
-    extra=0,
-    can_delete=False
-)
+from django import forms
+from .models import Student
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['n_gpa', 'd_starting_date', 'd_join_date']
+        widgets = {
+            'n_gpa': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'placeholder': 'Your GPA (e.g. 3.75)'
+            }),
+            'd_starting_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'd_join_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+        }
+        labels = {
+            'n_gpa': 'GPA',
+            'd_starting_date': 'Starting Date',
+            'd_join_date': 'Join Date',
+        }
