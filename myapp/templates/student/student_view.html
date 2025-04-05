@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📘 Learning Path</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body { background: #f8f9fa; padding: 2rem; }
+    .chapter-card { margin-bottom: 2rem; }
+    .exercise-card { display: none; margin-top: 1rem; }
+    .exercise-card.active { display: block; }
+    .submitted-msg { font-size: 0.9rem; color: green; display: none; }
+    .chapter-menu { background: #fff; border-radius: 8px; padding: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+    .chapter-menu h5 { margin-bottom: 1rem; }
+    .chapter-menu-scroll {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 0.5rem;
+    }
+    .chapter-link {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #f1f1f1;
+      border-radius: 20px;
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: #333;
+      transition: all 0.2s ease;
+    }
+    .chapter-link:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .chapter-link.completed {
+      background-color: #28a745;
+      color: white;
+    }
+    .chapter-link.locked {
+      background-color: #ccc;
+      color: #777;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 class="mb-4">📚 Your Learning Path</h2>
+
+  <!-- 🧭 Chapter Menu -->
+  <div class="chapter-menu">
+    <h5>🔖 Chapters in this path:</h5>
+    <div class="chapter-menu-scroll">
+      <a href="#chapter-1" class="chapter-link completed">✔️ Chapter 1</a>
+      <a href="#chapter-2" class="chapter-link completed">✔️ Chapter 2</a>
+      <a href="#chapter-3" class="chapter-link">📘 Chapter 3</a>
+      <a href="#" class="chapter-link locked">🔒 Chapter 4</a>
+      <a href="#" class="chapter-link locked">🔒 Chapter 5</a>
+      <a href="#" class="chapter-link locked">🔒 Chapter 6</a>
+      <a href="#" class="chapter-link locked">🔒 Chapter 7</a>
+    </div>
+  </div>
+
+  <!-- Chapter 1 -->
+  <div class="card chapter-card" id="chapter-1">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">📘 Chapter 1: Introduction to SQL</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-4">SQL is the language of relational databases. It allows users to query and manage data efficiently.</p>
+
+      <!-- Encouragement Section -->
+      <div class="card mt-4 border-left-success shadow p-3" id="llm-feedback-section" style="display: none;">
+        <h5 class="text-success">💬 Encouragement from your AI Learning Coach</h5>
+        <div id="llm-feedback-content" class="mt-2"></div>
+      </div>
+
+      <!-- Exercise 1 -->
+      <div class="card exercise-card active" id="exercise-1-1">
+        <div class="card-body">
+          <p><strong>1. What does SQL stand for?</strong></p>
+          <form>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q1"> Strong Question Language</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q1"> Structured Query Language</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q1"> Sequential Quick Language</div>
+            <button type="button" class="btn btn-success mt-2" onclick="submitExercise(1, 1, true)">Submit</button>
+            <span class="submitted-msg ml-3">✅ Answer submitted!</span>
+          </form>
+        </div>
+      </div>
+
+      <!-- Exercise 2 -->
+      <div class="card exercise-card" id="exercise-1-2">
+        <div class="card-body">
+          <p><strong>2. Which command retrieves data?</strong></p>
+          <form>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q2"> FETCH</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q2"> GET</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q2"> SELECT</div>
+            <button type="button" class="btn btn-success mt-2" onclick="submitExercise(1, 2, true)">Submit</button>
+            <span class="submitted-msg ml-3">✅ Answer submitted!</span>
+          </form>
+        </div>
+      </div>
+
+      <div class="text-right mt-4" id="chapter-1-next" style="display: none;">
+        <button class="btn btn-outline-primary" onclick="goToChapter(2)">➡️ Continue to Chapter 2</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapter 2 -->
+  <div class="card chapter-card" id="chapter-2" style="display: none;">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">📘 Chapter 2: SQL Commands</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-4">SQL has commands like SELECT, INSERT, UPDATE, DELETE, and more.</p>
+
+      <div class="card exercise-card active" id="exercise-2-1">
+        <div class="card-body">
+          <p><strong>1. What does INSERT do?</strong></p>
+          <form>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q3"> Retrieves data</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q3"> Adds data</div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="q3"> Deletes a table</div>
+            <button type="button" class="btn btn-success mt-2" onclick="submitExercise(2, 1, false)">Submit</button>
+            <span class="submitted-msg ml-3">✅ Answer submitted!</span>
+          </form>
+        </div>
+      </div>
+
+      <div class="text-right mt-4" id="chapter-2-next" style="display: none;">
+        <button class="btn btn-outline-primary">🎉 Finish Path</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitExercise(chapter, number, isCorrect) {
+    const currentCard = document.getElementById(`exercise-${chapter}-${number}`);
+    currentCard.querySelector('.submitted-msg').style.display = 'inline';
+    currentCard.querySelector('button').disabled = true;
+
+    showLLMEncouragement(isCorrect);
+
+    setTimeout(() => {
+      currentCard.classList.remove('active');
+      const nextCard = document.getElementById(`exercise-${chapter}-${number + 1}`);
+      if (nextCard) {
+        nextCard.classList.add('active');
+      } else {
+        document.getElementById(`chapter-${chapter}-next`).style.display = 'block';
+      }
+    }, 800);
+  }
+
+  function goToChapter(chapterNumber) {
+    const chapterCard = document.getElementById(`chapter-${chapterNumber}`);
+    if (chapterCard) {
+      chapterCard.style.display = 'block';
+      chapterCard.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function showLLMEncouragement(isCorrect) {
+    const feedbackEl = document.getElementById('llm-feedback-section');
+    const contentEl = document.getElementById('llm-feedback-content');
+    let feedback = "";
+
+    if (isCorrect) {
+      feedback = `
+        ✅ <strong>Great job!</strong> You nailed it! Keep up the momentum. You're on fire! 🔥
+      `;
+    } else {
+      feedback = `
+        🤔 <strong>Almost!</strong> That was a good try. Remember, every mistake is a step forward. Keep going! 💪
+      `;
+    }
+
+    contentEl.innerHTML = feedback;
+    feedbackEl.style.display = "block";
+  }
+</script>
+
+</body>
+</html>

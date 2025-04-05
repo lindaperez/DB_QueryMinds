@@ -1,13 +1,11 @@
 # myapp/models/profile.py
 
-# myapp/models/userprofile.py
-
 from django.db import models
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     USER_TYPE_CHOICES = [
-        ('', 'User Role'),
+        ('', 'User Role'),  # 👈 default empty choice
         ('instructor', 'Instructor'),
         ('student', 'Student'),
         ('admin', 'Admin'),

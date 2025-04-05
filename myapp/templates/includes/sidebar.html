@@ -1,29 +1,22 @@
 {% load i18n static admin_datta %}
 
-<!-- Sidebar Toggle Button -->
-<button id="sidebar-toggle-btn" class="btn btn-light m-2 d-md-none">
-  ☰
-</button>
 
-<!-- Sidebar -->
-<nav class="pc-sidebar" id="sidebar">
+<nav class="pc-sidebar">
   <div class="navbar-wrapper">
-    <div class="m-header d-flex justify-content-between align-items-center px-3 py-2">
-      <a href="{% url "home" %}" class="b-brand text-primary m-0 fw-bold fs-5">
+    <div class="m-header">
+      <a href="{% url "home" %}" class="b-brand text-primary">
+        <!-- ========   Change your logo from here   ============ -->
         QueryMinds
       </a>
-      <button id="sidebar-toggle-btn" class="btn btn-sm btn-light d-block d-md-inline" title="Toggle Sidebar">
-        <i data-feather="menu"></i>
-      </button>
     </div>
-    
     <div class="navbar-content">
+
       <ul class="pc-navbar">
+
         <li class="pc-item pc-caption">
           <label>User</label>
           <i data-feather="monitor"></i>
-        </li>
-
+        </li> 
         {% if not request.user.is_authenticated %}
         <li class="pc-item">
           <a href="{% url "login" %}" class="pc-link">
@@ -39,54 +32,81 @@
         </li>
         {% else %}
         <li class="pc-item">
-          <a href="{% url 'edit_profile' %}" class="pc-link">
+          <a href="{% url "update_profile" %}" class="pc-link">
             <span class="pc-micon"><i data-feather="lock"></i></span>
             <span class="pc-mtext">Edit Profile</span>
-          </a>
-          
-        </li>
-        <li class="pc-item">
-          <a href="{% url 'inbox' %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="mail"></i></span>
-            <span class="pc-mtext">Inbox</span>
           </a>
         </li>
         <li class="pc-item">
           <a href="{% url "logout" %}" class="pc-link">
             <span class="pc-micon">
-              <svg class="pc-icon me-2"><use xlink:href="#custom-logout-1-outline"></use></svg>
+              <svg class="pc-icon me-2">
+                <use xlink:href="#custom-logout-1-outline"></use>
+              </svg>
             </span>
             <span class="pc-mtext">Logout</span>
           </a>
         </li>
         {% endif %}
 
-        {% if request.user.is_superuser %}
-        <li class="pc-item pc-caption"><label>ADMIN</label></li>
-        <li class="pc-item">
-          <a href="{% url "home" %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="settings"></i></span>
-            <span class="pc-mtext">Superuser UI</span>
-          </a>
-        </li>
-        {% endif %}
 
-        <li class="pc-item pc-caption"><label>Navigation</label></li>
-        {% if request.user.userprofile.user_type == "instructor" %}
+      {% if request.user.is_superuser %}  
+
+      <li class="pc-item pc-caption">
+        <label>ADMIN</label>
+      </li>
+      <li class="pc-item">
+        <a href="{% url "home" %}" class="pc-link">
+          <span class="pc-micon">
+            <i data-feather="settings"></i>
+          </span>
+          <span class="pc-mtext">Superuser UI</span>
+        </a>
+      </li>
+      
+      <!-- superuser guard -->  
+      {% endif %}
+
+        <li class="pc-item pc-caption">
+          <label>Navigation</label>
+        </li>
+        {% if request.user.userprofile.user_type == "instructor" %} 
         <li class="pc-item">
           <a href="{% url "home" %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="home"></i></span>
+            <span class="pc-micon">
+              <i data-feather="home"></i>
+            </span>
             <span class="pc-mtext">Dashboard</span>
           </a>
         </li>
         <li class="pc-item">
           <a href="{% url "chapter_dashboard" %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="home"></i></span>
-            <span class="pc-mtext">Instructor Dashboard</span>
+            <span class="pc-micon">
+              <i data-feather="Dashboard"></i>
+            </span>
+            <span class="pc-mtext"> Instructor Dashboard </span>
           </a>
         </li>
+        
         {% endif %}
+       
+  
+        <li class="pc-item">
+          <a href="{% url "student_learning_view" %}" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="Learning"></i>
+            </span>
+            <span class="pc-mtext"> 📘 My Learning Path </span>
+          </a>
+        </li>
+    
+      
+      
+        
       </ul>
+
+  
+
     </div>
   </div>
 </nav>
