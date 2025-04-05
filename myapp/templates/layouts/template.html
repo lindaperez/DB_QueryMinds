@@ -36,8 +36,9 @@
             <div class="container">
                 <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
                 <div class="navbar-text">
-                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
-                </div>
+                    Student Name: <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                    | Account ID: <strong>{{ request.user.userprofile.account_id|default:"-" }}</strong>
+                </div>                
             </div>
         </nav>
 
@@ -48,10 +49,10 @@
                     <div>
                     <div class="card p-3">
                         <h4 class="text-primary">Student Information</h4>
-                        <div><strong>Name:</strong> John Doe</div>
-                        <div><strong>Student ID:</strong> 20231234</div>
-                        <div><strong>Email:</strong> johndoe@example.com</div>
-                        <div><strong>Registration Date:</strong> 2024-01-01</div>
+                        <div><strong>Name:</strong> {{ request.user.get_full_name|default:request.user.username }}</div>
+                        <div><strong>Student ID:</strong> {{ request.user.userprofile.account_id }}</div>
+                        <div><strong>Email:</strong> {{ request.user.email }}</div>
+                        <div><strong>Registration Date:</strong> {{ request.user.date_joined|date:"F j, Y" }}</div>
                     </div>
 
                     <!-- Message Notification Section -->

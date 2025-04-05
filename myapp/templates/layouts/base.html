@@ -4,20 +4,70 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 {% get_direction as direction %}
 {% get_admin_setting as admin_setting %}
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
   <head>
-    
-    <title>{% block title %}{% endblock title %} | Django Datta Able </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home{% endblock title %} | QueryMinds</title>
 
     <link rel="canonical" href="https://app-generator.dev/product/datta-able/django/" />
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     {% include "includes/head.html" %}
-    {% block extrastyle %}
-     
-    {% endblock extrastyle %}
-    
+    {% block extrastyle %}{% endblock extrastyle %}
     {% block extrahead %}{% endblock extrahead %}
 
+    <style>
+      #layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      #sidebar {
+        width: 260px;
+        transition: all 0.3s ease;
+      }
+
+      #main-content {
+        
+        flex-grow: 1;
+        transition: all 0.3s ease;
+        margin-left: 260px;
+        padding: 20px;
+      }
+
+      #sidebar.collapsed {
+        margin-left: -260px;
+      }
+      .pc-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        z-index: 1; /* Lower than sidebar */
+        background-color: #f8f9fa;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      #sidebar.collapsed + #main-content {
+        margin-left: 0;
+      }
+
+      @media (max-width: 768px) {
+        #sidebar {
+          position: absolute;
+          z-index: 1050;
+          height: 100%;
+          background-color: #fff;
+          box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #main-content {
+          margin-left: 0;
+        }
+      }
+    </style>
   </head>
 
   <body data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
@@ -25,22 +75,45 @@
       {% include "includes/loader.html" %}
     {% endblock loader %}
 
-    {% block sidebar %}
+    <!-- <button id="sidebar-toggle-btn" class="btn btn-light m-2 d-md-none">
+      <i class="bi bi-list"></i>
+    </button> -->
+
+    <div id="layout">
+      {% block sidebar %}
         {% include "includes/sidebar.html" %}
-    {% endblock sidebar %}
+      {% endblock sidebar %}
 
-    {% block navigation %}
-      {% include "includes/navigation.html" %}
-    {% endblock navigation %}
+      <div id="main-content">
+        {% block navigation %}
+          {% include "includes/navigation.html" %}
+        {% endblock navigation %}
 
-    {% block content %}{% endblock content %}
-     
-    {% block footer %}
-      {% include "includes/footer.html" %}
-    {% endblock footer %}
+        {% block content %}{% endblock content %}
+
+        {% block footer %}
+          {% include "includes/footer.html" %}
+        {% endblock footer %}
+      </div>
+    </div>
 
     {% include "includes/scripts.html" %}
     {% block extra_js %}{% endblock extra_js %}
-  
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+    
+        if (toggleBtn && sidebar) {
+          toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            document.body.classList.toggle('sidebar-collapsed');
+          });
+        }
+      });
+    </script>
+    
   </body>
 </html>

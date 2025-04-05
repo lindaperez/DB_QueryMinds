@@ -1,12 +1,9 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 
-{% block title %} Manage Learning Chapters {% endblock title %}
+{% block title %} Instructor Dashboard {% endblock title %}
 
 {% block content %}
-
-
-
 <div class="pc-container">
   <div class="pc-content">
     <!-- Page Header -->
@@ -16,9 +13,8 @@
           <div class="col-md-12">
             <div class="page-header-title">
               <h5 class="m-b-10">
-                <a href="/"> 📚 Manage Learning Chapter</a>
+                <a href="/">Dashboard</a>
               </h5>
-        
             </div>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">Instructor Learning Path</li>
@@ -48,41 +44,30 @@
     </div>
 
     <!-- Create Chapter Global Form -->
-    <div class="card p-3 mb-4 ">
-   
-      <button class="btn btn-outline-info mb-3" onclick="toggleForm('create-chapter-form')">➕ Create New Chapter</button>
-
-      <div id="create-chapter-form" class="form-toggle card p-3 mb-4" style="display: none;">
-
-
-        <form method="post">
-          {% csrf_token %}
-          {{ chapter_form.media }}
-          <div class="form-group">
-            {{ chapter_form.v_content.label_tag }}
-          </div>
-          <div class="form-group">
-            {{ chapter_form.v_content }}
-            {{ chapter_form.v_content.errors }}
-          </div>
-        
-          <div class="form-group">
-            {{ chapter_form.d_deadline.label_tag }}
-            {{ chapter_form.d_deadline }}
-            {{ chapter_form.d_deadline.errors }}
-          </div>
-        
-          <div class="form-group">
-            {{ chapter_form.f_weight.label_tag }}
-            {{ chapter_form.f_weight }}
-            {{ chapter_form.f_weight.errors }}
-          </div>
-        
-          <button type="submit" name="create_chapter" class="btn btn-primary w-100">Create Chapter</button>
-        </form>
-        
+    <div class="card p-3 mb-4">
+      <div class="card-header">
+        <h4 class="text-primary">Create New Chapter</h4>
+        {{ chapter_form.media }}
       </div>
-      
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ chapter_form.v_content.label_tag }}
+          {{ chapter_form.v_content }}
+          {{ chapter_form.v_content.errors }}
+        </div>
+        <div class="form-group">
+          {{ chapter_form.d_deadline.label_tag }}
+          {{ chapter_form.d_deadline }}
+          {{ chapter_form.d_deadline.errors }}
+        </div>
+        <div class="form-group">
+          {{ chapter_form.f_weight.label_tag }}
+          {{ chapter_form.f_weight }}
+          {{ chapter_form.f_weight.errors }}
+        </div>
+        <button type="submit" name="create_chapter" class="btn btn-primary w-100">Create Chapter</button>
+      </form>
     </div>
 
     <!-- Chapter Sections with aligned forms -->
@@ -90,27 +75,19 @@
     <div class="card mb-4 chapter-card">
       <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
-          <h5 class="mb-0 cursor-pointer mr-3" onclick="toggleChapterBody(this);toggleView('chapter-view-{{ chapter.id_learningchapter }}');">📘 Chapter {{ forloop.counter }}</h5>
-          <h5 class="mb-0 cursor-pointer mr-3" onclick="toggleChapterBody(this)">{{ chapter.v_content.html|striptags|linebreaksbr|truncatewords:2|safe }}
-
-
-          </h5>
-
+          <h5 class="mb-0 cursor-pointer mr-3" onclick="toggleChapterBody(this)">📘 Chapter {{ forloop.counter }}</h5>
+          <span class="text-light text-truncate" style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ chapter.v_content.html|truncatechars:20|safe }}
+          </span>
         </div>
         <div class="text-right">
           <a href="javascript:void(0);" class="text-white small ml-3" onclick="event.stopPropagation(); toggleView('chapter-view-{{ chapter.id_learningchapter }}')">👁 View</a>
           <a href="javascript:void(0);" class="text-white small ml-2" onclick="event.stopPropagation(); toggleEdit('chapter-edit-{{ chapter.id_learningchapter }}')">✏️ Edit</a>
-       
         </div>
       </div>
       <div class="card-body">
         <div class="mb-3" id="chapter-view-{{ chapter.id_learningchapter }}" style="display:none;">
-   
-          <div>
-            {{ chapter.v_content|safe }}
-          </div>  
-            
-     
+          {{ chapter.v_content.html|safe }}
           <p class="text-muted small mb-1">
             <strong>Deadline:</strong> {{ chapter.d_deadline }} | <strong>Weight:</strong> {{ chapter.f_weight }}%
           </p>
@@ -118,57 +95,24 @@
 
         <div class="row">
           <div class="col-md-12">
-            <!-- Optional: only show this section when user clicks Edit -->
-
-            
-            
-            <div id="chapter-edit-{{ chapter.id_learningchapter }}" class="form-toggle" style="display:none;"">
-
-              
-                <h5 class="text-primary">✏️ Edit Chapter</h5>
-                <div class="card p-3 mb-4">
-         
-                  {{ chapter.edit_form.media }}
-                  <form method="post" >
-                    {% csrf_token %}
-            
-                    {{ chapter.edit_form.non_field_errors }}
-                
-                    <div class="form-group">
-                      {{ chapter.edit_form.v_content.label_tag }}
-                    </div>
-                    <div class="form-group">
-                      {{ chapter.edit_form.v_content }}
-                      {{ chapter.edit_form.v_content.errors }}
-                    </div>
-                
-                    <div class="form-group">
-                      {{ chapter.edit_form.d_deadline.label_tag }}
-                      {{ chapter.edit_form.d_deadline }}
-                      {{ chapter.edit_form.d_deadline.errors }}
-                    </div>
-                
-                    <div class="form-group">
-                      {{ chapter.edit_form.f_weight.label_tag }}
-                      {{ chapter.edit_form.f_weight }}
-                      {{ chapter.edit_form.f_weight.errors }}
-                    </div>
-                
-                    <input type="hidden" name="chapter_edit_id" value="{{ chapter.id_learningchapter }}">
-                    <button type="submit" name="edit_chapter" class="btn btn-primary">Save Changes</button>
-                  </form>
-                </div>
-                
-              </div>
+            <div class="card p-3 mb-3" id="chapter-edit-{{ chapter.id_learningchapter }}" style="display:none;">
+              <h5 class="text-primary">✏️ Edit Chapter</h5>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="chapter_edit_id" value="{{ chapter.id_learningchapter }}">
+                <textarea class="form-control mb-2" name="edit_content" rows="3">{{ chapter.v_content.html }}</textarea>
+                <input type="date" class="form-control mb-2" name="edit_deadline" value="{{ chapter.d_deadline }}">
+                <input type="number" step="0.01" class="form-control mb-2" name="edit_weight" value="{{ chapter.f_weight }}">
+                <button type="submit" name="edit_chapter" class="btn btn-outline-primary w-100">Update Chapter</button>
+              </form>
+            </div>
           </div>
-          
+
           <div class="col-md-12">
             <div class="row">
               <div class="col-md-6">
                 <div class="card p-3 mb-3">
-                
-                  <button class="btn btn-outline-success mb-2" onclick="toggleForm('add-exercise-{{ chapter.id_learningchapter }}')">➕ Add Exercise</button>
-                  <div id="add-exercise-{{ chapter.id_learningchapter }}" class="card p-3 mb-3" style="display: none;">
+                  <h5 class="text-primary">Add Exercise</h5>
                   <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="chapter_id" value="{{ chapter.id_learningchapter }}">
@@ -189,109 +133,76 @@
                     {% endfor %}
                     <button type="submit" name="create_exercise" class="btn btn-success mt-2 w-100">Add Exercise</button>
                   </form>
-                  </div>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="card p-3 mb-3">
-                  <button class="btn btn-outline-warning mb-2" onclick="toggleForm('add-eval-{{ chapter.id_learningchapter }}')">➕ Add Evaluation</button>
-                  <div id="add-eval-{{ chapter.id_learningchapter }}" class="card p-3 mb-3" style="display: none;">
+                  <h5 class="text-primary">Add Evaluation</h5>
                   <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="chapter_id" value="{{ chapter.id_learningchapter }}">
                     {{ evaluation_form.as_p }}
                     <button type="submit" name="create_evaluation" class="btn btn-warning w-100">Create Evaluation</button>
                   </form>
-                  </div>
                 </div>
               </div>
             </div>
-            <!--List exercises and edit each exercise-->
-            <div class="card p-3">
-              <h5 class="text-primary">Exercises</h5>
-              {% for ex in chapter.exercises %}
-              <div class="alert alert-light position-relative">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>{{ ex.description }}</strong><br>
-                    <small>
-                      Weight: {{ ex.f_weight }}% | Deadline: {{ ex.d_deadline }} | Max Attempts: {{ ex.n_max_attempts }}
-                    </small>
-                
-                    {% if ex.options.all %}
-                    <ul class="mt-2 mb-1 pl-3">
-                      {% for opt in ex.options.all %}
-                        <li>
-                          {% if opt.b_iscorrect %}
-                            <strong>{{ opt.v_option }}</strong> ✅
-                          {% else %}
-                            {{ opt.v_option }}
-                          {% endif %}
-                        </li>
-                      {% endfor %}
-                    </ul>
-                    {% endif %}
-                  </div>
-                
-                  <a href="javascript:void(0);" class="text-primary small" onclick="toggleEdit('exercise-edit-{{ ex.id_exercise }}')">✏️ Edit</a>
-                </div>
-                <form method="post" class="bg-light p-3 rounded shadow-sm mt-3 border" id="exercise-edit-{{ ex.id_exercise }}" style="display:none;">
-                  {% csrf_token %}
-                  <input type="hidden" name="exercise_id" value="{{ ex.id_exercise }}">
-                
-                  <!-- Exercise Fields -->
-                  {{ ex.edit_form.non_field_errors }}
-                  <div class="form-group">
-                    {{ ex.edit_form.description.label_tag }}
-                    {{ ex.edit_form.description }}
-                    {{ ex.edit_form.description.errors }}
-                  </div>
-                
-                  <div class="form-row">
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.f_weight.label_tag }}
-                      {{ ex.edit_form.f_weight }}
-                      {{ ex.edit_form.f_weight.errors }}
-                    </div>
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.d_deadline.label_tag }}
-                      {{ ex.edit_form.d_deadline }}
-                      {{ ex.edit_form.d_deadline.errors }}
-                    </div>
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.n_max_attempts.label_tag }}
-                      {{ ex.edit_form.n_max_attempts }}
-                      {{ ex.edit_form.n_max_attempts.errors }}
-                    </div>
-                  </div>
-                
-                  <!-- Options -->
-                  {% if ex.options.all %}
-                    <h6 class="mt-2">Edit Options</h6>
-                    {% for opt in ex.options.all %}
-                      <div class="form-group">
-                        <input type="text" class="form-control mb-1" name="option_text_{{ opt.id_option }}" value="{{ opt.v_option }}">
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" name="option_correct_{{ opt.id_option }}" {% if opt.b_iscorrect %}checked{% endif %}>
-                          <label class="form-check-label">Correct</label>
+                        <!--List exercises and edit each exercise-->
+                        <div class="card p-3">
+                          <h5 class="text-primary">Exercises</h5>
+                          {% for ex in chapter.exercises %}
+                          <div class="alert alert-light position-relative">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <strong>{{ ex.description }}</strong><br>
+                                <small>
+                                  Weight: {{ ex.f_weight }}% | Deadline: {{ ex.d_deadline }} | Max Attempts: {{ ex.n_max_attempts }}
+                                </small>
+                              </div>
+                              <a href="javascript:void(0);" class="text-primary small" onclick="toggleEdit('exercise-edit-{{ ex.id_exercise }}')">✏️ Edit</a>
+                            </div>
+                            <form class="bg-light p-3 rounded shadow-sm mt-3 border" method="post" id="exercise-edit-{{ ex.id_exercise }}" style="display:none;">
+                              {% csrf_token %}
+                              <input type="hidden" name="exercise_id" value="{{ ex.id_exercise }}">
+                              <div class="form-group">
+                                <label><strong>Description</strong></label>
+                                <input type="text" name="edit_exercise_desc" class="form-control" value="{{ ex.description }}">
+                              </div>
+                              <div class="form-row">
+                                <div class="form-group col-md-4">
+                                  <label><strong>Weight (%)</strong></label>
+                                  <input type="number" name="edit_exercise_weight" step="0.01" class="form-control" value="{{ ex.f_weight }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label><strong>Deadline</strong></label>
+                                  <input type="date" name="edit_exercise_deadline" class="form-control" value="{{ ex.d_deadline }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                  <label><strong>Max Attempts</strong></label>
+                                  <input type="number" name="edit_exercise_attempts" class="form-control" value="{{ ex.n_max_attempts }}">
+                                </div>
+                              </div>
+                              {% if ex.options.all %}
+                              <h6 class="mt-2">Edit Options</h6>
+                              {% for opt in ex.options.all %}
+                              <div class="form-group">
+                                <input type="text" class="form-control mb-1" value="{{ opt.v_option }}">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" {% if opt.b_iscorrect %}checked{% endif %}>
+                                  <label class="form-check-label">Correct</label>
+                                </div>
+                              </div>
+                              {% endfor %}
+                              {% endif %}
+                              <button type="submit" name="edit_exercise" class="btn btn-success mt-2 w-100">Update Exercise</button>
+                            </form>
+                          </div>
+                          {% empty %}
+                          <p>No exercises yet.</p>
+                          {% endfor %}
                         </div>
-                      </div>
-                    {% endfor %}
-                  {% endif %}
-                
-                
-                  <button type="submit" name="edit_exercise" class="btn btn-success mt-2 w-100">Update Exercise</button>
-                </form>
-                
-                
-                
-              </div>
-              {% empty %}
-              <p>No exercises yet.</p>
-              {% endfor %}
-            </div>
-            <!-- end -->
+                        <!-- end -->
             
           </div>
         </div>
@@ -302,53 +213,32 @@
 </div>
 {% endblock content %}
 
-
 {% block extra_js %}
-
-  <script>
-    function toggleEdit(id) {
-      const el = document.getElementById(id);
-      const wasHidden = el.style.display === 'none';
-      el.style.display = wasHidden ? 'block' : 'none';
-
-    
-    }
-
-  function toggleForm(id) {
-    document.querySelectorAll('.form-toggle').forEach(el => {
-      if (el.id !== id) el.style.display = 'none';
-    });
-
-    const el = document.getElementById(id);
-    if (el) {
+<script>
+  function collapseAllChapters() {
+    const chapters = document.querySelectorAll('.chapter-card .card-body');
+    chapters.forEach(el => {
       el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    });
+  }
 
-      // Check if CKEditor already initialized
-      const textarea = el.querySelector('textarea');
-      if (textarea && !CKEDITOR.instances[textarea.id]) {
-        CKEDITOR.replace(textarea.id);
-      }
+  function toggleChapterBody(headerEl) {
+    const card = headerEl.closest('.chapter-card');
+    const body = card.querySelector('.card-body');
+    if (body.style.display === 'none') {
+      body.style.display = 'block';
+    } else {
+      body.style.display = 'none';
     }
   }
-    collapseAllChapters() 
-    function collapseAllChapters() {
-        const chapters = document.querySelectorAll('.chapter-card .card-body');
-        chapters.forEach(el => {
-          el.style.display = 'none';
-        });
-    }
-    function toggleChapterBody(headerEl) {
-      const card = headerEl.closest('.chapter-card');
-      const body = card.querySelector('.card-body');
 
-      // Toggle visibility
-      body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'block' : 'none';
-    }
-    function toggleView(id) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
-      }
-    }
-  </script>
-{% endblock %}
+  function toggleEdit(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+  function toggleView(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
+{% endblock extra_js %}

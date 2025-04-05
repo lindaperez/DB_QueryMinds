@@ -5,34 +5,8 @@
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
       <div class="me-auto pc-mob-drp">
         <ul class="list-unstyled">
-          <!-- ======= Menu collapse Icon ===== -->
-          <li class="pc-h-item pc-sidebar-collapse">
-            <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
-              <i data-feather="menu"></i>
-            </a>
-          </li>
-          <li class="pc-h-item pc-sidebar-popup">
-            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
-              <i data-feather="menu"></i>
-            </a>
-          </li>
-          <li class="dropdown pc-h-item">
-            <a
-              class="pc-head-link dropdown-toggle arrow-none m-0 trig-drp-search"
-              data-bs-toggle="dropdown"
-              href="#"
-              role="button"
-              aria-haspopup="false"
-              aria-expanded="false"
-            >
-              <i data-feather="search"></i>
-            </a>
-            <div class="dropdown-menu pc-h-dropdown drp-search">
-              <form class="px-3 py-2">
-                <input type="search" class="form-control border-0 shadow-none" placeholder="Search here. . ." />
-              </form>
-            </div>
-          </li>
+          
+          
         </ul>
       </div>
       <!-- [Mobile Media Block end] -->
@@ -164,19 +138,17 @@
                     <img src="{% static "assets/images/user/avatar-2.jpg" %}" alt="user-image" class="user-avtar wid-35" />
                   </div>
                   <div class="flex-grow-1 ms-3">
-                    <h6 class="text-white mb-1">Carson Darrin 🖖</h6>
-                    <span class="text-white text-opacity-75">carson.darrin@company.io</span>
+                    <h6 class="text-white mb-1">{{ request.user.first_name }} {{ request.user.last_name }}</h6>
+                    <span class="text-white text-opacity-75">{{ request.user.email }}</span>
                   </div>
                 </div>
               </div>
               <div class="dropdown-body">
                 <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
-                  <a href="#" class="dropdown-item">
+                  <a href="{% url 'edit_profile' %}" class="dropdown-item">
                     <span>
-                      <svg class="pc-icon text-muted me-2">
-                        <use xlink:href="#custom-setting-outline"></use>
-                      </svg>
-                      <span>Settings</span>
+                      <i class="bi bi-pencil-square me-2"></i>
+                      <span>Edit Profile</span>
                     </span>
                   </a>
                   <a href="#" class="dropdown-item">
@@ -187,11 +159,15 @@
                       <span>Share</span>
                     </span>
                   </a>
+                  <a href="{% url 'view_profile' %}" class="dropdown-item">
+                    <span>
+                      <i class="bi bi-person me-2"></i>
+                      <span>My Profile</span>
+                    </span>
+                  </a>                                    
                   <a href="#" class="dropdown-item">
                     <span>
-                      <svg class="pc-icon text-muted me-2">
-                        <use xlink:href="#custom-lock-outline"></use>
-                      </svg>
+                      <i class="bi bi-shield-lock me-2"></i>
                       <span>Change Password</span>
                     </span>
                   </a>

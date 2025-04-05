@@ -12,7 +12,7 @@ class MultipleOption(models.Model):
     v_option = models.TextField()
 
     class Meta:
-        managed = False  # ✅ Keep as is if you're using a legacy DB
+        managed = False
         db_table = 'MULTIPLE_OPTION'
 
     def __str__(self):
