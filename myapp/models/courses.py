@@ -5,12 +5,18 @@ from myapp.models.instructors import Instructor  # Adjust the path if necessary
 
 
 class Course(models.Model):
-    instructor = models.ForeignKey(Instructor, on_delete=models.RESTRICT)
-    subject = models.CharField(max_length=255)
-    created = models.DateField()
-    starting_at = models.DateField()
-    finishing_at = models.DateField()
+    id_course = models.AutoField(primary_key=True)
+    instructor = models.ForeignKey(
+        'Instructor',
+        on_delete=models.RESTRICT,
+        db_column='id_instructor'  # important!
+    )
+    v_subject = models.CharField(max_length=255)
+    d_created = models.DateField()
+    d_starting_at = models.DateField()
+    d_finishing_at = models.DateField()
 
-    def __str__(self):
-        return self.subject
+    class Meta:
+        managed = False  # Make sure this is False if using an existing DB
+        db_table = 'COURSE'
 

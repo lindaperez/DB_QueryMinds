@@ -9,3 +9,6 @@ class Message(models.Model):
     v_text = models.TextField()
     d_sent_at = models.DateTimeField()
     n_read_status = models.BooleanField(default=False)
+    class Meta:
+        managed = False
+        db_table = 'MESSAGE'

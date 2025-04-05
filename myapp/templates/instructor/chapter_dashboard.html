@@ -88,7 +88,7 @@
     <!-- Chapter Sections with aligned forms -->
     {% for chapter in chapters %}
     <div class="card mb-4 chapter-card">
-      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <div class="card-header  text-white d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
           <h5 class="mb-0 cursor-pointer mr-3" onclick="toggleChapterBody(this);toggleView('chapter-view-{{ chapter.id_learningchapter }}');">📘 Chapter {{ forloop.counter }}</h5>
           <h5 class="mb-0 cursor-pointer mr-3" onclick="toggleChapterBody(this)">{{ chapter.v_content.html|striptags|linebreaksbr|truncatewords:2|safe }}
@@ -97,20 +97,25 @@
           </h5>
 
         </div>
-        <div class="text-right">
-          <a href="javascript:void(0);" class="text-white small ml-3" onclick="event.stopPropagation(); toggleView('chapter-view-{{ chapter.id_learningchapter }}')">👁 View</a>
-          <a href="javascript:void(0);" class="text-white small ml-2" onclick="event.stopPropagation(); toggleEdit('chapter-edit-{{ chapter.id_learningchapter }}')">✏️ Edit</a>
-       
+        <div class="d-flex justify-content-end gap-2">
+          <button class="action-btn" onclick="event.stopPropagation(); toggleView('chapter-view-{{ chapter.id_learningchapter }}')">
+            <i data-feather="eye" class="icon"></i> View
+          </button>
+          <button class="action-btn" onclick="event.stopPropagation(); toggleEdit('chapter-edit-{{ chapter.id_learningchapter }}')">
+            <i data-feather="edit-3" class="icon"></i> Edit
+          </button>
+      
         </div>
+        
+        
       </div>
+      <!--VIEW Chapter --->
       <div class="card-body">
         <div class="mb-3" id="chapter-view-{{ chapter.id_learningchapter }}" style="display:none;">
    
           <div>
             {{ chapter.v_content|safe }}
           </div>  
-            
-     
           <p class="text-muted small mb-1">
             <strong>Deadline:</strong> {{ chapter.d_deadline }} | <strong>Weight:</strong> {{ chapter.f_weight }}%
           </p>
@@ -207,11 +212,18 @@
                 </div>
               </div>
             </div>
-            <!--List exercises and edit each exercise-->
+            <!-- List Evaluations and exercises per evaluation -->
+            <div class="row">
+              
+                
+
+            </div>
+            <!--List exercises edit,delete each exercise-->
             <div class="card p-3">
               <h5 class="text-primary">Exercises</h5>
               {% for ex in chapter.exercises %}
               <div class="alert alert-light position-relative">
+                <!--View-->
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <strong>{{ ex.description }}</strong><br>
@@ -233,13 +245,38 @@
                     </ul>
                     {% endif %}
                   </div>
-                
-                  <a href="javascript:void(0);" class="text-primary small" onclick="toggleEdit('exercise-edit-{{ ex.id_exercise }}')">✏️ Edit</a>
+                  <div>
+                  <div>
+                    
+                    <div class="d-flex align-items-center gap-2 mt-2">
+                      <a href="javascript:void(0);" class="text-primary small"
+                         onclick="event.stopPropagation(); toggleEdit('exercise-edit-{{ ex.id_exercise }}')">
+                        <i data-feather="edit-3" class="me-1 icon-xs"></i> Edit
+                      </a>
+                      <a href="javascript:void(0);" class="text-danger small"
+                         onclick="event.stopPropagation(); toggleDeleteConfirm('delete-confirm-{{ ex.id_exercise }}')">
+                        <i data-feather="trash-2" class="me-1 icon-xs"></i> Delete
+                      </a>
+                    </div>
+                    
+                  <div id="delete-confirm-{{ ex.id_exercise }}" style="display: none;" class="bg-light border rounded p-2 mt-2">
+                    <p class="mb-2 small">Are you sure you want to remove this exercise from the chapter?</p>
+                    <form method="post" class="bg-light p-3 rounded shadow-sm mt-3 border" id="exercise-delete-{{ ex.id_exercise }}" >
+                      {% csrf_token %}
+                      <input type="hidden" name="exercise_id" value="{{ ex.id_exercise }}">
+                      <input type="hidden" name="chapter_id" value="{{ chapter.id_learningchapter }}">
+                      <button type="submit" name="remove_exercise" class="btn btn-danger btn-sm">Yes, Delete</button>
+                      <button type="button" class="btn btn-secondary btn-sm" onclick="toggleDeleteConfirm('delete-confirm-{{ ex.id_exercise }}')">Cancel</button>
+                    </form>
+                  </div>
+                  </div>
                 </div>
+                </div>
+                <!--Edit Exercise-->
                 <form method="post" class="bg-light p-3 rounded shadow-sm mt-3 border" id="exercise-edit-{{ ex.id_exercise }}" style="display:none;">
                   {% csrf_token %}
                   <input type="hidden" name="exercise_id" value="{{ ex.id_exercise }}">
-                
+                  
                   <!-- Exercise Fields -->
                   {{ ex.edit_form.non_field_errors }}
                   <div class="form-group">
@@ -247,28 +284,9 @@
                     {{ ex.edit_form.description }}
                     {{ ex.edit_form.description.errors }}
                   </div>
-                
-                  <div class="form-row">
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.f_weight.label_tag }}
-                      {{ ex.edit_form.f_weight }}
-                      {{ ex.edit_form.f_weight.errors }}
-                    </div>
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.d_deadline.label_tag }}
-                      {{ ex.edit_form.d_deadline }}
-                      {{ ex.edit_form.d_deadline.errors }}
-                    </div>
-                    <div class="form-group col-md-4">
-                      {{ ex.edit_form.n_max_attempts.label_tag }}
-                      {{ ex.edit_form.n_max_attempts }}
-                      {{ ex.edit_form.n_max_attempts.errors }}
-                    </div>
-                  </div>
-                
                   <!-- Options -->
                   {% if ex.options.all %}
-                    <h6 class="mt-2">Edit Options</h6>
+                    <h6 class="mt-2">Modify Answer Options:</h6>
                     {% for opt in ex.options.all %}
                       <div class="form-group">
                         <input type="text" class="form-control mb-1" name="option_text_{{ opt.id_option }}" value="{{ opt.v_option }}">
@@ -280,12 +298,30 @@
                     {% endfor %}
                   {% endif %}
                 
-                
+                  <div class="form-group col-md-4">
+                    {{ ex.edit_form.d_deadline.label_tag }}
+                    {{ ex.edit_form.d_deadline }}
+                    {{ ex.edit_form.d_deadline.errors }}
+                  </div>
+                  <div class="form-group col-md-4">
+                    {{ ex.edit_form.n_max_attempts.label_tag }}
+                    {{ ex.edit_form.n_max_attempts }}
+                    {{ ex.edit_form.n_max_attempts.errors }}
+                  </div>
+           
+                    <div class="form-group col-md-4">
+                      {{ ex.edit_form.f_weight.label_tag }}
+                      {{ ex.edit_form.f_weight }}
+                      {{ ex.edit_form.f_weight.errors }}
+                    </div>
+                    <div class="form-group col-md-4">
+                      {{ ex.edit_form.id_difficultylevel.label_tag }}
+                      {{ ex.edit_form.id_difficultylevel }}
+                      {{ ex.edit_form.id_difficultylevel.errors }}
+                    </div>
                   <button type="submit" name="edit_exercise" class="btn btn-success mt-2 w-100">Update Exercise</button>
                 </form>
-                
-                
-                
+
               </div>
               {% empty %}
               <p>No exercises yet.</p>
@@ -310,8 +346,6 @@
       const el = document.getElementById(id);
       const wasHidden = el.style.display === 'none';
       el.style.display = wasHidden ? 'block' : 'none';
-
-    
     }
 
   function toggleForm(id) {
@@ -349,6 +383,51 @@
       if (el) {
         el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
       }
+      
+    }
+    function toggleDeleteConfirm(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      }
     }
   </script>
+  
 {% endblock %}
+<style>
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    user-select: none;
+  }
+
+  .action-btn:hover {
+    background-color: #e2e8f0; /* subtle gray */
+  }
+
+  .action-btn.text-danger:hover {
+    background-color: #fee2e2; /* soft red */
+  }
+</style>
+<style>
+  .delete-popup {
+    position: absolute;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: none;
+    width: 280px;
+    right: 10px;
+    top: 100%; /* appears below the button */
+  }
+</style>

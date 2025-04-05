@@ -12,7 +12,7 @@ from .multiple_option  import MultipleOption
 from .answers import Answer
 from .courses import Course
 from .student_courses import StudentCourse
-
 from .course_chapter import CourseLearnChapter
-
 from .answer_multiple_options import AnswerMultipleOption
+from .studentEvaluation import StudentEvaluation
+from .attempt import Attempt

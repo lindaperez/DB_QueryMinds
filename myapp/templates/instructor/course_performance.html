@@ -1,0 +1,259 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Performance Dashboard{% endblock %}
+
+{% block content %}
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">📊 Performance Dashboard</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">Instructor</li>
+              <li class="breadcrumb-item">Performance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔢 Metric Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card text-white bg-light">
+          <div class="card-body">
+            <h6>Average Chapter Score</h6>
+            <h3>{{ avg_chapter_score }}%</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card text-white bg-warning">
+          <div class="card-body">
+            <h6>Completion Rate</h6>
+            <h3>{{ completion_rate }}%</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-white bg-info">
+          <div class="card-body">
+            <h6>Avg Eval Score</h6>
+            <h3>{{avg_eval_score}}%</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-white bg-success">
+          <div class="card-body">
+            <h6>Total Students</h6>
+            <h3>{{ total_students }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-white bg-info">
+          <div class="card-body">
+            <h6>Total Chapters</h6>
+            <h3>{{ total_chapters }}</h3>
+          </div>
+        </div>
+      </div>
+
+  
+    </div>
+
+    <!-- 📊 Graph Section -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Course Performance Overview</h5>
+      </div>
+      <div class="card-body">
+        <!-- First row: 2 side-by-side charts -->
+        <div class="row text-center">
+          <div class="col-md-3 col-sm-12 mb-4">
+            <div class="border rounded p-3 shadow-sm h-100">
+            <h6 class="text-muted"> Average Scores per Chapter</h6>
+            <canvas id="chapterScoreChart" height="160"></canvas>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-12 mb-4">
+            <div class="border rounded p-3 shadow-sm h-100">
+            <h6 class="text-muted">Students Chapter Completion</h6>
+            <canvas id="studentCompletionChart" height="160"></canvas>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 mb-4">
+            <div class="border rounded p-3 shadow-sm h-100">
+              <h6 class="text-muted">Evaluation Performance</h6>
+              <canvas id="evalChart" height="160"></canvas>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-4">
+            <div class="border rounded p-3 shadow-sm h-100">
+              <h6 class="text-muted">Attempts Distribution</h6>
+              <canvas id="attemptsChart" height="160"></canvas>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- 📋 Students Table -->
+    <div class="card p-3">
+      <h5>📋 Students Overview</h5>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>GPA</th>
+            <th>Chapter Score</th>
+            <th>Progress</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr>
+            <td>{{ student.user.first_name}} {{ student.user.last_name}}</td>
+            <td>{{ student.n_gpa }}</td>
+            <td>{{ student.chapter_score }}%</td>
+
+            <td>
+              <div class="mb-3">
+                <div class="progress" style="height: 25px;">
+                  <div class="progress-bar 
+                              {% if student.progress >= 80 %}
+                                bg-success
+                              {% elif student.progress >= 50 %}
+                                bg-warning
+                              {% else %}
+                                bg-danger
+                              {% endif %}"
+                       role="progressbar"
+                       style="width: {{ student.progress }}%;"
+                       aria-valuenow="{{ student.progress }}"
+                       aria-valuemin="0"
+                       aria-valuemax="100">
+                    {{ student.progress }}%
+                  </div>
+                </div>
+              </div>
+            </td>
+            
+
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">No students enrolled yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- JSON Data for Dashboard -->
+<script id="dashboard-data" type="application/json">
+  {{ dashboard_json|safe }}
+</script>
+
+<script>
+  const data = JSON.parse(document.getElementById("dashboard-data").textContent);
+
+  const chapterCtx = document.getElementById('chapterScoreChart').getContext('2d');
+  const studentCtx = document.getElementById('studentCompletionChart').getContext('2d');
+  const evalCtx = document.getElementById('evalChart').getContext('2d');
+  const attemptsCtx = document.getElementById('attemptsChart').getContext('2d');
+
+  new Chart(chapterCtx, {
+    type: 'bar',
+    data: {
+      labels: data.chapterLabels,
+      datasets: [{
+        label: 'Score (%)',
+        data: data.chapterScores,
+        backgroundColor: '#0d6efd'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+
+  new Chart(studentCtx, {
+    type: 'doughnut',
+    data: {
+      labels: data.completionLabels,
+      datasets: [{
+        data: data.completionValues,
+        backgroundColor: ['#198754', '#ffc107']
+      }]
+    },
+    options: {
+      responsive: true,
+      
+    }
+  });
+  new Chart(evalCtx, {
+    type: 'line',
+    data: {
+      labels: ['Eval 1', 'Eval 2', 'Eval 3'],
+      datasets: [{
+        label: 'Avg Score',
+        data: [82, 75, 89],
+        borderColor: '#6610f2',
+        backgroundColor: 'rgba(102, 16, 242, 0.1)',
+        fill: true
+      }]
+    }
+  });
+
+  new Chart(attemptsCtx, {
+    type: 'pie',
+    data: {
+      labels: ['1 Attempt', '2 Attempts', '3+ Attempts'],
+      datasets: [{
+        data: [60, 30, 10],
+        backgroundColor: ['#20c997', '#fd7e14', '#dc3545']
+      }]
+    }
+  });
+</script>
+
+
+</script>
+{% endblock %}
+<style>
+  .progress {
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 20px;
+}
+  </style> 

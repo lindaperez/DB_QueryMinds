@@ -21,9 +21,28 @@
               {% csrf_token %}
               
               <div class="text-center">
-                <a href="{% url "home" %}">
-                  <div>QueryMinds</div>
-                </a>
+                <div class="queryminds-logo">
+                  <span class="qm-highlight">Query</span>Minds
+                </div>
+                
+                <style>
+                  .queryminds-logo {
+                    font-size: 2.3rem;
+                    font-weight: 700;
+                    font-family: 'Poppins', sans-serif;
+                    color: #1e293b; /* Slate-800 */
+                    letter-spacing: 1px;
+                    display: inline-block;
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    background: linear-gradient(90deg, #f0fdfa, #ecfeff); /* soft mint/blue */
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+                  }
+                
+                  .qm-highlight {
+                    color: #14b8a6; /* Teal-500 */
+                  }
+                </style>
               </div>
             
               <h4 class="text-center f-w-500 mt-4 mb-3">Sign up</h4>

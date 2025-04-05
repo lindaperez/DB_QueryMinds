@@ -1,5 +1,6 @@
 from django.db import models
-from myapp.models import Course, LearningChapter  # Import the Course and LearningChapter models
+from .courses import Course
+from .learning_chapter import LearningChapter
 
 class CourseLearnChapter(models.Model):
     course = models.ForeignKey(Course, on_delete=models.RESTRICT)
@@ -7,3 +8,7 @@ class CourseLearnChapter(models.Model):
 
     class Meta:
         unique_together = ('course', 'chapter')
+        managed = False
+        db_table = 'COURSE_LEARN_CHAPTER'
+    def __str__(self):
+        return f"Course {self.course.id_course} → Chapter {self.chapter.id_chapter}"

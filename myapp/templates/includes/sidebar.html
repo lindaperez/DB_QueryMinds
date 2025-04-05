@@ -4,10 +4,31 @@
 <nav class="pc-sidebar">
   <div class="navbar-wrapper">
     <div class="m-header">
+    
       <a href="{% url "home" %}" class="b-brand text-primary">
-        <!-- ========   Change your logo from here   ============ -->
-        QueryMinds
-      </a>
+      <div class="queryminds-logo">
+        <span class="qm-highlight">Query</span>Minds
+      
+      </div>
+    </a>
+      <style>
+        .queryminds-logo {
+          font-size: 1.1rem;
+          font-weight: 700;
+          font-family: 'Poppins', sans-serif;
+          color: #1e293b; /* Slate-800 */
+          letter-spacing: 1px;
+          display: inline-block;
+          padding: 8px 16px;
+          border-radius: 12px;
+          background: linear-gradient(90deg, #c8e2e8, #ecfeff); /* soft mint/blue */
+          box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        }
+      
+        .qm-highlight {
+          color: #14b8a6; /* Teal-500 */
+        }
+      </style>
     </div>
     <div class="navbar-content">
 
@@ -32,21 +53,26 @@
         </li>
         {% else %}
         <li class="pc-item">
-          <a href="{% url "update_profile" %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="lock"></i></span>
+          <a href="{% url 'update_profile' %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="user"></i></span>
             <span class="pc-mtext">Edit Profile</span>
           </a>
         </li>
+        
         <li class="pc-item">
-          <a href="{% url "logout" %}" class="pc-link">
+          <a href="{% url 'logout' %}" class="pc-link">
             <span class="pc-micon">
-              <svg class="pc-icon me-2">
-                <use xlink:href="#custom-logout-1-outline"></use>
+              <svg xmlns="http://www.w3.org/2000/svg" class="pc-icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M14 8l4 4l-4 4" />
+                <path d="M7 12h11" />
+                <path d="M3 12v-7a2 2 0 0 1 2 -2h7" />
               </svg>
             </span>
             <span class="pc-mtext">Logout</span>
           </a>
         </li>
+        
         {% endif %}
 
 
@@ -81,25 +107,26 @@
         </li>
         <li class="pc-item">
           <a href="{% url "chapter_dashboard" %}" class="pc-link">
-            <span class="pc-micon">
-              <i data-feather="Dashboard"></i>
-            </span>
-            <span class="pc-mtext"> Instructor Dashboard </span>
+   
+            <span class="pc-mtext"> Manage Learning Chapters </span>
           </a>
         </li>
-        
+        <li class="pc-item">
+          <a href="{% url "course_performance" %}" class="pc-link">
+   
+            <span class="pc-mtext"> Course Performance </span>
+          </a>
+        </li>
         {% endif %}
        
-  
+        {% if request.user.userprofile.user_type == "student" %} 
         <li class="pc-item">
           <a href="{% url "student_learning_view" %}" class="pc-link">
-            <span class="pc-micon">
-              <i data-feather="Learning"></i>
-            </span>
-            <span class="pc-mtext"> 📘 My Learning Path </span>
+         
+            <span class="pc-mtext"> My Learning Path </span>
           </a>
         </li>
-    
+        {% endif %}
       
       
         

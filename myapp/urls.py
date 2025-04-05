@@ -47,23 +47,21 @@ urlpatterns = [
     path('accounts/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
         ), name='password_reset_complete'),
-    # Components
-    path('color/', views.color, name='color'),
-    path('typography/', views.typography, name='typography'),
-    path('feather-icon/', views.icon_feather, name='icon_feather'),
-    path('sample-page/', views.sample_page, name='sample_page'),
+  
     
     # Manage Learning Path for Instructor and Student
     
      path('dashboard/', views.instructor_dashboard, name='chapter_dashboard'),
-
+     path('instructor/course_performance/', views.course_performance, name='course_performance'),
+     
+     path('instructor/student/<int:student_id>/', views.instructor_student_detail_view, name='instructor_student_detail_view'),
     #  Student Learning
-   
     path("learning-path/", views.student_learning_view, name="student_learning_view"),
-    path('submit-answer/', views.submit_answer, name='submit_answer'),
+
     path('student/mark_chapter_read/', views.mark_chapter_read, name='mark_chapter_read'),
 
-   # LLM urls by Feiyan
+
+    # LLM urls by Feiyan
     path('llmexe',LLMStudent.llm_interact, name='llm_interact_student'),
     path('llmexe/view/', LLMStudent.view_tasks, name="view_tasks_student"),
     path('llmexe/clear/', LLMStudent.clear_tasks, name='clear_tasks_student'),
@@ -74,30 +72,6 @@ urlpatterns = [
     path('llmins/onestu/', LLMInstructor.llm_view_record, name='llm_view_record_ins'),
     path('llmins/aiassist/', LLMInstructor.llm_view_AIassist, name='llm_AIassist'),
 
-   
-    #path('student/chapter/<int:chapter_id>/', views.chapter_detail, name='chapter_detail'), 
-
-    # Student learning interface
-    #path('learning/', views.student_learning_path, name='student_learning_path'),
-
-    # API endpoint for submitting answers (can be AJAX)
-    #path('learning/submit-answer/', views.submit_answer, name='submit_answer'),
-
-    # Chapter progress
-    #path('learning/chapter-progress/', views.chapter_progress, name='chapter_progress'),
-
-    # Messaging (if needed)
-    #path('messages/', views.message_center, name='message_center'),
-
-    # Instructor course management (optional depending on progress)
-    #path('instructor/courses/', views.instructor_courses, name='instructor_courses'),
-
-    # Student course enrollment
-    #path('student/enroll/', views.enroll_course, name='enroll_course'),
-
-    # View course details
-    #path('course/<int:course_id>/', views.course_detail, name='course_detail'),
-    
 ]
 
 

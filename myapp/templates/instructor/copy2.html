@@ -1,0 +1,107 @@
+<!-- You can add this inside your Students Overview Table -->
+<table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>GPA</th>
+        <th>Chapter Score</th>
+        <th>Evaluation Score</th>
+        <th>Progress</th>
+        <th>Performance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Student: Alice -->
+      <tr>
+        <td>Alice Johnson</td>
+        <td>3.7</td>
+        <td>91%</td>
+        <td>88%</td>
+        <td>
+          <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-success" style="width: 90%">90%</div>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-outline-info" onclick="togglePerformance('alice')">📈 View Timeline</button>
+        </td>
+      </tr>
+      <tr id="chart-row-alice" class="d-none">
+        <td colspan="6">
+          <canvas id="chart-alice" height="100"></canvas>
+        </td>
+      </tr>
+  
+      <!-- Student: Bob -->
+      <tr>
+        <td>Bob Smith</td>
+        <td>3.2</td>
+        <td>76%</td>
+        <td>72%</td>
+        <td>
+          <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-warning" style="width: 65%">65%</div>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-outline-info" onclick="togglePerformance('bob')">📈 View Timeline</button>
+        </td>
+      </tr>
+      <tr id="chart-row-bob" class="d-none">
+        <td colspan="6">
+          <canvas id="chart-bob" height="100"></canvas>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    const studentTimeData = {
+      alice: {
+        labels: ["2025-03-01", "2025-03-08", "2025-03-15"],
+        scores: [85, 88, 91]
+      },
+      bob: {
+        labels: ["2025-03-01", "2025-03-08", "2025-03-15"],
+        scores: [70, 75, 80]
+      }
+    };
+  
+    function togglePerformance(studentKey) {
+      const row = document.getElementById(`chart-row-${studentKey}`);
+      row.classList.toggle("d-none");
+  
+      if (!row.classList.contains("rendered")) {
+        const ctx = document.getElementById(`chart-${studentKey}`).getContext('2d');
+        const chartData = studentTimeData[studentKey];
+  
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.labels,
+            datasets: [{
+              label: 'Avg Score Over Time',
+              data: chartData.scores,
+              borderColor: '#0d6efd',
+              backgroundColor: 'rgba(13, 110, 253, 0.1)',
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100
+              }
+            }
+          }
+        });
+  
+        row.classList.add("rendered");
+      }
+    }
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
