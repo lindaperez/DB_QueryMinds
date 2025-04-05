@@ -18,7 +18,6 @@ MODEL_NAME = "gpt-4"
 
 logger = logging.getLogger(__name__)
 
-a=0
 
 @csrf_exempt
 @login_required
