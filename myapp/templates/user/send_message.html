@@ -2,13 +2,16 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Send a Message</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <a href="{% url 'send_message' %}" class="btn btn-secondary w-100">Send a Message</a>
-
-    </form>
-</div>
+<div class="pc-container">
+    <div class="pc-content">
+    <div class="container mt-4">
+        <h2>Send a Message</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+    </div>
+</div> 
 {% endblock %}
