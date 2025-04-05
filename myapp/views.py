@@ -137,24 +137,24 @@ def register(request):
             user_type = form.cleaned_data['user_type']
             UserProfile.objects.create(user=user, user_type=user_type)
 
-            # Get the matching AuthUser (from your own model, not Django's)
+            # Get the matching User (from your own model, not Django's)
             try:
-                auth_user = AuthUser.objects.get(username=user.username)
-            except AuthUser.DoesNotExist:
-                print("❌ AuthUser not found for", user.username)
+                Student.objects.get(user=request.user)
+            except User.DoesNotExist:
+                print("❌ User not found for", user.username)
                 return redirect('/accounts/login/')
 
-            # Create role-specific profiles using auth_user
+            
             if user_type == 'instructor':
                 Instructor.objects.create(
-                    user=auth_user,  # ✅ Fix: use auth_user not user
+                    user=user,
                     v_specialty='',
                     v_bio='',
                     n_phone=''
                 )
             elif user_type == 'student':
                 Student.objects.create(
-                    id_user=auth_user,  # ✅ Also using auth_user
+                    user=user,  # ❗ use `user`, not `id_user` now
                     n_gpa=0.00,
                     d_starting_date=timezone.now(),
                     d_join_date=timezone.now()
@@ -207,14 +207,10 @@ def studenthub(request):
 def instructor_dashboard(request):
     
     message_already_handled = False
-    django_user = request.user
-    auth_user = get_auth_user(django_user)
-
-    if not auth_user:
-        raise PermissionDenied("No matching AuthUser found.")
+    django_user = request.user  
 
     try:
-        instructor = Instructor.objects.get(user=auth_user)
+        instructor = Instructor.objects.get(user=django_user)
     except Instructor.DoesNotExist:
         raise PermissionDenied("You must be an instructor to access this page.")
 
@@ -803,8 +799,7 @@ from .models import (
 
 @login_required
 def course_performance(request):
-    auth_user = get_auth_user(request.user)
-    instructor = get_object_or_404(Instructor, user=auth_user)
+    instructor = get_object_or_404(Instructor, user=request.user)
     print(f"INSTRUCTOR {instructor}")
     course = get_object_or_404(Course, pk=6)
     print(f"COURSE {course}")
@@ -1039,58 +1034,60 @@ def reply_message_view(request, message_id):
         'original': original
     })
 
-from .models.auth_user import AuthUser
+from django.contrib.auth.models import User
+
 from .models.instructors import Instructor
 from .models.students import Student
 from .forms import ProfileForm
-from myapp.utils import get_auth_user
+
 
 @login_required
 def profile_view(request):
-    django_user = request.user
-    auth_user = get_auth_user(django_user)
+    user = request.user
+    user_profile = user.userprofile
 
-    user_profile = django_user.userprofile  
     context = {
-        'user': django_user,
-        'auth_user': auth_user,
+        'user': user,
         'user_profile': user_profile
     }
 
     if user_profile.user_type == 'instructor':
-        context['role_profile'] = Instructor.objects.filter(user=auth_user).first()
+        context['role_profile'] = Instructor.objects.filter(user=user).first()
     elif user_profile.user_type == 'student':
-        context['role_profile'] = Student.objects.filter(id_user=auth_user).first()
+        context['role_profile'] = Student.objects.filter(id_user=user).first()
 
     return render(request, 'user/profile.html', context)
+
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages as django_messages
 from .models import Student, Instructor
 from .forms import UserForm, StudentForm, InstructorForm
-from .utils import get_auth_user  # Assuming you have a helper like this
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Student, Instructor
+from .forms import UserForm, StudentForm, InstructorForm
 
 @login_required
 def edit_profile(request):
-    django_user = request.user
+    user = request.user
 
     try:
-        user_profile = django_user.userprofile
+        user_profile = user.userprofile
     except Exception as e:
         print("User profile issue:", e)
-        return redirect('home')  # Or show a proper error page
-
-    auth_user = get_auth_user(django_user)  # Your helper method
+        return redirect('home')
 
     role_instance = None
     role_form_class = None
-    role_profile = None  # For displaying profile picture
 
     if user_profile.user_type == 'student':
         try:
-            role_instance = Student.objects.get(id_user=auth_user)
-            role_profile = role_instance
+            role_instance = Student.objects.get(id_user=user)
             role_form_class = StudentForm
         except Student.DoesNotExist:
             print("Student not found")
@@ -1098,14 +1095,13 @@ def edit_profile(request):
 
     elif user_profile.user_type == 'instructor':
         try:
-            role_instance = Instructor.objects.get(user=auth_user)
-            role_profile = role_instance
+            role_instance = Instructor.objects.get(user=user)
             role_form_class = InstructorForm
         except Instructor.DoesNotExist:
             print("Instructor not found")
             return redirect('home')
 
-    user_form = UserForm(request.POST or None, instance=django_user)
+    user_form = UserForm(request.POST or None, instance=user)
     role_form = role_form_class(request.POST or None, request.FILES or None, instance=role_instance) if role_form_class else None
 
     if request.method == 'POST':
@@ -1115,20 +1111,11 @@ def edit_profile(request):
                 role_form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect('view_profile')
-    print(f"Request.user.id = {request.user.id}")
-    auth_user = get_auth_user(request.user)
-    print(f"AuthUser.id = {auth_user.id if auth_user else 'None'}")
-
-    student = Student.objects.filter(id_user=auth_user).first()
-    print(f"Student: {student}")
-
 
     return render(request, 'user/edit_profile.html', {
         'user_form': user_form,
         'student_form': role_form if user_profile.user_type == 'student' else None,
         'instructor_form': role_form if user_profile.user_type == 'instructor' else None,
-        'role_profile': role_profile,
+        'role_profile': role_instance,
     })
-
-
 
