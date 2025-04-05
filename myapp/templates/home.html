@@ -35,72 +35,97 @@
          <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
+                {% if request.user.userprofile.user_type == "student" %}
                 <div class="navbar-text">
-                    Student Name: <strong>{{ user.first_name }} {{ user.last_name }}</strong> | Account ID: <strong>DB{{ user.id }}</strong>
-                </div>                
+                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
+                </div>
+                {% else %}
+                <div class="navbar-text">
+                    Instructor Name: <strong>John Doe</strong> 
+                </div>
+                {% endif %}
+
             </div>
         </nav>
 
-         <!-- Student Info Section -->
+         <!--  Info Section -->
 
             <div class="row">
                 <div class="col-md-4">
                     <div>
                     <div class="card p-3">
+                        {% if request.user.userprofile.user_type == "student" %}
                         <h4 class="text-primary">Student Information</h4>
-                        <div><strong>Name:</strong> {{ first_name }} {{ last_name }}</div>
-                        <div><strong>Student ID:</strong> {{ student_id }}</div>
-                        <div><strong>Email:</strong> {{ email }}</div>
-                        <div><strong>Registration Date:</strong> {{ registration_date }}</div>
+                        <div><strong>Name:</strong> John Doe</div>
+                        <div><strong>Student ID:</strong> 20231234</div>
+                        <div><strong>Email:</strong> johndoe@example.com</div>
+                        <div><strong>Registration Date:</strong> 2024-01-01</div>
+                        {% else %}
+                        <h4 class="text-primary">Instructor Information</h4>
+                        <div><strong>Name:</strong> John Doe</div>
+                        <div><strong>Specialties</strong> ...</div>
+                        <div><strong>Bio:</strong> ..</div>
+
+                        {% endif %}
+
                     </div>
+
                     <!-- Message Notification Section -->
                     <div class="card p-3 mt-3">
                         <h4 class="text-primary">Message Notifications</h4>
                         <p>Check messages or task replies, or send a new message.</p>
-                        <a href="{% url 'inbox' %}" class="btn btn-primary w-100 mb-2">View Messages</a>
-                        <a href="{% url 'send_message' %}" class="btn btn-secondary w-100">Send a Message</a>
+                        <button class="btn btn-primary w-100 mb-2">View Messages</button>
+                        <button class="btn btn-secondary w-100">Send a Message</button>
                     </div>
                     <div class="card p-3 mt-3">
-                        <h4 class="text-primary">LLM Teacher</h4>
-                        <p>What do you want to know?</p>
-                        <button class="btn btn-primary w-100 mb-2">Searching Information</button>
-                        <button class="btn btn-secondary w-100">Learning SQL</button>
+                        <h4 class="text-primary">QueryLLM Assistant</h4>
+                        <p>What can I help U? 🌞</p>
+                        {% if request.user.userprofile.user_type == "student" %}
+                        <a href="{% url 'llm_interact_student' %}" class="btn btn-primary w-100 mb-2">😎 Practice Queries with QueryLLM</a>
+                        <a href="{% url 'llm_view_record' %}" class="btn btn-secondary w-100">📝 View Your Past Practicing Report</a>
+                        {% elif request.user.userprofile.user_type == "instructor" %}
+                        <a href="{% url 'llm_view_record_ins' %}" class="btn btn-primary w-100 mb-2">📈 View Student Practice Record</a>
+                        <a href="{% url 'llm_AIassist' %}" class="btn btn-secondary w-100">📝 Final Report and AI-Analysis</a>
+                        {% endif %}
                     </div>
                 </div>
                 </div>
                 <!-- Course Chapters Section -->
-                <div class="col-md-8">
-                    <h2 class="text-primary">Chapter 1: Introduction to Databases</h2>
+                <div class=" card col-md-8">
+                    <h2 class="text-primary"> Introduction to Databases</h2>
                     <div class="card p-3">
-                        <h4>Course Content</h4>
-                        <p>Databases are structured collections of data that are stored and managed electronically. They enable efficient data retrieval, storage, and manipulation.</p>
-                        <p>Relational databases use structured tables to store data, with relationships between different tables established using primary and foreign keys.</p>
-                        <p>Some common database management systems (DBMS) include MySQL, PostgreSQL, Oracle, and MongoDB.</p>
-                        <p>Understanding how databases function is crucial for modern applications, ranging from web development to big data analytics.</p>
-                        <a href="quiz.html" class="btn btn-primary">Start Test</a>
+                    <div class="card p-3">
+               
+                        <div class="sql-course-index">
+                            <h3>Chapters for a SQL Course</h3>
+                            <p><strong>Based on:</strong> “Learning SQL” by Alan Beaulieu (O'Reilly, 3rd Edition, 2020)<br>
+                                <strong>ISBN:</strong> 978-1-492-07961-1</p>
+                          
+                            <h3> Beginner: Core SQL Concepts</h3>
+                            <ul>
+                              <li>Introduction to Relational Databases</li>
+                              <li>Installing and Connecting to a Database</li>
+                                ...
+                            </ul>
+                          
+                            
+                          
+                            <h3>📖 Reference:</h3>
+                            <p>
+                              Beaulieu, Alan. <em>Learning SQL</em> (3rd Edition). O'Reilly Media, 2020. ISBN: 9781492079611
+                            </p>
+                          </div>
+                          {% if request.user.userprofile.user_type == "student" %} 
+                        <a href="{% url 'student_learning_view' %}" class="btn btn-primary">Start/Continue Course</a>
+                        {% else %}
+                        <a  href="{% url 'chapter_dashboard' %}"  class="btn btn-primary">Manage Learning Chapters</a>
+                        {% endif %}
                     </div>
-                    <h2 class="text-primary">Chapter 2: SQL Basics</h2>
-                    <div class="card p-3">
-                    <h4>Course Content</h4>
-                    <p>SQL (Structured Query Language) is the standard language for managing and manipulating relational databases.</p>
-                    <p>Common SQL commands include SELECT, INSERT, UPDATE, DELETE, and CREATE, which allow users to query and modify data efficiently.</p>
-                    <p>SQL allows filtering data using conditions like WHERE, ORDER BY, and GROUP BY to extract meaningful insights from large datasets.</p>
-                    <p>Indexes and joins enhance SQL performance, making database queries faster and more efficient.</p>
-                    <a href="quiz.html" class="btn btn-primary">Start Test</a>
-                    
-                </div>
-                <h2 class="text-primary">Chapter 3: Database Optimization</h2>
-                <div class="card p-3">
-                    <h4>Course Content</h4>
-                    <p>Database optimization is crucial for improving performance, reducing query execution time, and enhancing scalability.</p>
-                    <p>Indexing is a technique used to speed up data retrieval by creating efficient access paths to database records.</p>
-                    <p>Normalization minimizes redundancy and ensures data integrity by structuring databases in a way that reduces anomalies.</p>
-                    <p>Effective caching strategies and query optimization techniques help enhance the overall efficiency of database systems.</p>
-                    <a href="quiz.html" class="btn btn-primary">Start Test</a>
-                </div>
-                </div>
+                    </div>
+               
 
             </div>
+
    
 
     </div>

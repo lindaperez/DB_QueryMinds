@@ -1,0 +1,125 @@
+<!-- 📘 COURSE-LEVEL PERFORMANCE INSIGHTS -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">📊 Course-Level Insights</h5>
+    </div>
+    <div class="card-body">
+  
+      <!-- Row of 2 graphs -->
+      <div class="row mb-4">
+        <!-- 1. Chapter Completion Rate -->
+        <div class="col-md-6">
+          <h6 class="text-muted">📘 Chapter Completion Rate</h6>
+          <canvas id="chapterCompletionChart" height="200"></canvas>
+        </div>
+  
+        <!-- 2. Avg Score per Chapter -->
+        <div class="col-md-6">
+          <h6 class="text-muted">📈 Avg Score per Chapter</h6>
+          <canvas id="avgScorePerChapterChart" height="200"></canvas>
+        </div>
+      </div>
+  
+      <!-- Row of 2 more graphs -->
+      <div class="row">
+        <!-- 3. Student Weekly Activity -->
+        <div class="col-md-6">
+          <h6 class="text-muted">📅 Student Activity Per Week</h6>
+          <canvas id="weeklyStudentActivityChart" height="200"></canvas>
+        </div>
+  
+        <!-- 4. Course Evaluation Trend -->
+        <div class="col-md-6">
+          <h6 class="text-muted">⭐ Course Evaluation Over Time</h6>
+          <canvas id="courseEvaluationChart" height="200"></canvas>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // 1. Chapter Completion Chart
+    new Chart(document.getElementById("chapterCompletionChart"), {
+      type: 'bar',
+      data: {
+        labels: ["Ch 1", "Ch 2", "Ch 3", "Ch 4"],
+        datasets: [{
+          label: 'Students Completed',
+          data: [25, 22, 15, 8],
+          backgroundColor: '#20c997'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Students' } },
+          x: { title: { display: true, text: 'Chapters' } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  
+    // 2. Avg Score per Chapter
+    new Chart(document.getElementById("avgScorePerChapterChart"), {
+      type: 'bar',
+      data: {
+        labels: ["Ch 1", "Ch 2", "Ch 3", "Ch 4"],
+        datasets: [{
+          label: 'Avg Score (%)',
+          data: [82, 75, 68, 60],
+          backgroundColor: '#0d6efd'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, max: 100 },
+          x: { title: { display: true, text: 'Chapters' } }
+        }
+      }
+    });
+  
+    // 3. Weekly Student Activity
+    new Chart(document.getElementById("weeklyStudentActivityChart"), {
+      type: 'line',
+      data: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        datasets: [{
+          label: 'Active Students',
+          data: [20, 25, 18, 22],
+          borderColor: '#ffc107',
+          backgroundColor: 'rgba(255, 193, 7, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true },
+          x: { title: { display: true, text: 'Week' } }
+        }
+      }
+    });
+  
+    // 4. Course Evaluation Trend
+    new Chart(document.getElementById("courseEvaluationChart"), {
+      type: 'line',
+      data: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        datasets: [{
+          label: 'Evaluation Score',
+          data: [4.2, 4.0, 3.7, 3.5],
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, max: 5 },
+          x: { title: { display: true, text: 'Week' } }
+        }
+      }
+    });
+  </script>
+    

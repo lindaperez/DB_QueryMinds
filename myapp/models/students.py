@@ -7,11 +7,18 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-from .auth_user import AuthUser
+from django.contrib.auth.models import User
 
 class Student(models.Model):
     id_student = models.AutoField(primary_key=True)
-    id_user = models.OneToOneField(AuthUser, models.DO_NOTHING, db_column='id_user', blank=True, null=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.DO_NOTHING,
+        db_column='id_user',
+        blank=True,
+        null=True
+    )
+    
     n_gpa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
     d_starting_date = models.DateField()
     d_join_date = models.DateField()
@@ -19,10 +26,3 @@ class Student(models.Model):
     class Meta:
         managed = False
         db_table = 'STUDENT'
-    def __str__(self):
-        try:
-            return f"Student: {self.id_user.first_name} {self.id_user.last_name}"
-        except Exception:
-            return f"Student {self.id_student}"
-
-

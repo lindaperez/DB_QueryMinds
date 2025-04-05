@@ -6,8 +6,13 @@ from .difficulty_level import DifficultyLevel
 from .evaluation import Evaluation
 from .chapter_evaluation import ChapterEvaluation
 from .chapter_exercise import ChapterExercise
+from .chapter_student import ChapterStudent
 from .evaluation_exercise import EvaluationExercise
 from .multiple_option  import MultipleOption
-from .message import Message
-from .profile import UserProfile
-
+from .answers import Answer
+from .courses import Course
+from .student_courses import StudentCourse
+from .course_chapter import CourseLearnChapter
+from .answer_multiple_options import AnswerMultipleOption
+from .studentEvaluation import StudentEvaluation
+from .attempt import Attempt

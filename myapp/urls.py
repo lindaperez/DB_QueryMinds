@@ -1,7 +1,12 @@
 from django.urls import path
 from . import views
+from .views import student_learning_view  # Import student_learning_view
 from django.contrib.auth import views as auth_views
 from .forms import CustomLoginForm  # Import CustomLoginForm
+
+# Feiyan add LLM part views
+from . import LLMStudent
+from . import LLMInstructor
 
 urlpatterns = [
     path('', views.home_view, name='home'),  # Home page
@@ -9,15 +14,7 @@ urlpatterns = [
     path('index', views.home_view, name='home'), 
     path('index/', views.home_view, name='home'), 
  
-    path('inbox/', views.inbox_view, name='inbox'),
-    path('send-message/', views.send_message_view, name='send_message'),
-    path('reply/<int:message_id>/', views.reply_message_view, name='reply_message'),
-    path('user/profile/view/', views.profile_view, name='view_profile'),
-    path('user/profile/edit/', views.edit_profile, name='edit_profile'),
-    path('inbox/fetch/', views.fetch_messages_view, name='fetch_messages'),
-
-
-
+    path('user/profile/', views.update_profile, name='update_profile'),
 
     path(
         'accounts/login/',
@@ -50,17 +47,30 @@ urlpatterns = [
     path('accounts/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
         ), name='password_reset_complete'),
-    # Components
-    path('color/', views.color, name='color'),
-    path('typography/', views.typography, name='typography'),
-    path('feather-icon/', views.icon_feather, name='icon_feather'),
-    path('sample-page/', views.sample_page, name='sample_page'),
+  
     
-    # Learning Path for Instructor and Student
+    # Manage Learning Path for Instructor and Student
     
      path('dashboard/', views.instructor_dashboard, name='chapter_dashboard'),
+     path('instructor/course_performance/', views.course_performance, name='course_performance'),
+     
+     path('instructor/student/<int:student_id>/', views.instructor_student_detail_view, name='instructor_student_detail_view'),
+    #  Student Learning
+    path("learning-path/", views.student_learning_view, name="student_learning_view"),
+
+    path('student/mark_chapter_read/', views.mark_chapter_read, name='mark_chapter_read'),
 
 
+    # LLM urls by Feiyan
+    path('llmexe',LLMStudent.llm_interact, name='llm_interact_student'),
+    path('llmexe/view/', LLMStudent.view_tasks, name="view_tasks_student"),
+    path('llmexe/clear/', LLMStudent.clear_tasks, name='clear_tasks_student'),
+    path('llmexe/generate_from_keyword/', LLMStudent.generate_tests_from_keyword, name='generate_from_keyword'),
+    path('llmexe/submit_answer/', LLMStudent.submit_answer, name='submit_answer'),
+    path("llmexe/submit_final_score/", LLMStudent.submit_final_score, name="submit_final_score"),
+    path("llmexe/record/", LLMStudent.llm_view_record, name="llm_view_record"),
+    path('llmins/onestu/', LLMInstructor.llm_view_record, name='llm_view_record_ins'),
+    path('llmins/aiassist/', LLMInstructor.llm_view_AIassist, name='llm_AIassist'),
 
 ]
 
