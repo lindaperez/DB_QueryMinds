@@ -16,3 +16,5 @@ from .course_chapter import CourseLearnChapter
 from .answer_multiple_options import AnswerMultipleOption
 from .studentEvaluation import StudentEvaluation
 from .attempt import Attempt
+from .message import Message
+from .profile import UserProfile

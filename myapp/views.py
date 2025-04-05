@@ -46,105 +46,129 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     return render(request, 'accounts/login.html')
 
-# Update Profile 
+# # Update Profile 
+# @login_required
+# def update_profile(request):
+#     user = request.user
+#     type_role = user.userprofile.user_type
+#     student_form = None
+#     instructor_form = None
+#     student = None
+#     instructor = None
+
+#     if request.method == 'POST':
+#         user_form = UserForm(request.POST, instance=user)
+
+#         if type_role == 'instructor':
+#             instructor = request.user.instructor
+#             instructor_form = InstructorForm(request.POST, instance=instructor)
+#             if user_form.is_valid() and instructor_form.is_valid():
+#                 user_form.save()
+#                 instructor_form.save()
+#                 messages.success(request, 'Your profile was updated successfully!')
+#                 return redirect('update_profile')
+#             else:
+#                 messages.error(request, 'Please correct the error below.')
+
+#         elif type_role == 'student':
+#             student = request.user.student
+#             student_form = StudentForm(request.POST, instance=student)
+#             if user_form.is_valid() and student_form.is_valid():
+#                 user_form.save()
+#                 student_form.save()
+#                 messages.success(request, 'Your profile was updated successfully!')
+#                 return redirect('update_profile')
+#             else:
+#                 messages.error(request, 'Please correct the error below.')
+
+#     else:
+#         user_form = UserForm(instance=user)
+
+#         if type_role == 'instructor':
+#             instructor = request.user.instructor
+#             instructor_form = InstructorForm(instance=instructor)
+
+#         elif type_role == 'student':
+#             student = request.user.student
+#             student_form = StudentForm(instance=student)
+
+#     return render(request, 'user/edit_profile.html', {
+#         'user_form': user_form,
+#         'student_form': student_form,
+#         'instructor_form': instructor_form,
+#     })
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from .models.message import Message
+from django.db.models import Q
+
 @login_required
-def update_profile(request):
-    user = request.user
-    type_role = user.userprofile.user_type
-    student_form = None
-    instructor_form = None
-    student = None
-    instructor = None
+def fetch_messages_view(request):
+    current_user = request.user.username
+    other_user = request.GET.get("user")
+    
+    messages = Message.objects.filter(
+        Q(sender=current_user, receiver=other_user) |
+        Q(sender=other_user, receiver=current_user)
+    ).order_by("timestamp")
 
-    if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=user)
+    return HttpResponse(render_to_string("partials/chat_messages.html", {
+        "messages": messages,
+        "current_user": current_user
+    }))
 
-        if type_role == 'instructor':
-            instructor = request.user.instructor
-            instructor_form = InstructorForm(request.POST, instance=instructor)
-            if user_form.is_valid() and instructor_form.is_valid():
-                user_form.save()
-                instructor_form.save()
-                messages.success(request, 'Your profile was updated successfully!')
-                return redirect('update_profile')
-            else:
-                messages.error(request, 'Please correct the error below.')
-
-        elif type_role == 'student':
-            student = request.user.student
-            student_form = StudentForm(request.POST, instance=student)
-            if user_form.is_valid() and student_form.is_valid():
-                user_form.save()
-                student_form.save()
-                messages.success(request, 'Your profile was updated successfully!')
-                return redirect('update_profile')
-            else:
-                messages.error(request, 'Please correct the error below.')
-
-    else:
-        user_form = UserForm(instance=user)
-
-        if type_role == 'instructor':
-            instructor = request.user.instructor
-            instructor_form = InstructorForm(instance=instructor)
-
-        elif type_role == 'student':
-            student = request.user.student
-            student_form = StudentForm(instance=student)
-
-    return render(request, 'user/edit_profile.html', {
-        'user_form': user_form,
-        'student_form': student_form,
-        'instructor_form': instructor_form,
-    })
 
 # Authentication
 class UserLoginView(LoginView):
   template_name = 'accounts/login.html'
   form_class = LoginForm
 
-# Registration
 def register(request):
-  if request.method == 'POST':
-    form = RegistrationForm(request.POST)
-    if form.is_valid():
-      user = form.save(commit=False)
-      user.set_password(form.cleaned_data['password1'])  # 
-      user.save()
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            # Save Django's built-in User model
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])  
+            user.save()
 
-      user_type = form.cleaned_data['user_type']
-      UserProfile.objects.create(user=user, user_type=user_type)
+            # Create UserProfile
+            user_type = form.cleaned_data['user_type']
+            UserProfile.objects.create(user=user, user_type=user_type)
 
-      # Optional: Create role-specific profile
-      if user_type == 'instructor':
-        Instructor.objects.create(user=user, v_specialty='', v_bio='', n_phone='')
-      elif user_type == 'student':
-        student = Student.objects.create(user=user, n_gpa=0.00, d_starting_date=timezone.now(),d_join_date=timezone.now())
-        course = Course.objects.get(pk=6)  # Replace with your course ID
-      
-        all_chpters = LearningChapter.objects.filter(instructor=course.instructor)
-        for chapter in all_chpters:
-            # Use correct field names from your model
+            # Get the matching User (from your own model, not Django's)
+            try:
+                Student.objects.get(user=request.user)
+            except User.DoesNotExist:
+                print("❌ User not found for", user.username)
+                return redirect('/accounts/login/')
+
             
-            chapter_student, created = ChapterStudent.objects.get_or_create(
-                student=student,
-                learning_chapter=chapter,
-                defaults={'d_begin': now().date(), 'n_score': 0, 'n_ranking': 0, 'd_finish': None}
-            )
-            if created:
-                print(f"ChapterStudent created: {chapter_student}")
-            else:
-                print(f"ChapterStudent already exists: {chapter_student}")
-      messages.success(request, "✅ Your account has been created successfully!")
-      print('Account created successfully!')
-      return redirect('/accounts/login/')
-    else:
-      print("Register failed!")
-  else:
-    form = RegistrationForm()
+            if user_type == 'instructor':
+                Instructor.objects.create(
+                    user=user,
+                    v_specialty='',
+                    v_bio='',
+                    n_phone=''
+                )
+            elif user_type == 'student':
+                Student.objects.create(
+                    user=user,  # ❗ use `user`, not `id_user` now
+                    n_gpa=0.00,
+                    d_starting_date=timezone.now(),
+                    d_join_date=timezone.now()
+                )
 
-  context = { 'form': form }
-  return render(request, 'accounts/register.html', context)
+            print('✅ Account created successfully!')
+            return redirect('/accounts/login/')
+        else:
+            print("❌ Register failed!")
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'accounts/register.html', {'form': form})
+
 
 # Log out 
 def logout_view(request):
@@ -183,11 +207,13 @@ def studenthub(request):
 def instructor_dashboard(request):
     
     message_already_handled = False
-    user = request.user
+    django_user = request.user  
+
     try:
-        instructor = Instructor.objects.get(user=user)
+        instructor = Instructor.objects.get(user=django_user)
     except Instructor.DoesNotExist:
         raise PermissionDenied("You must be an instructor to access this page.")
+
 
     # Forms
     chapter_form = ChapterForm(request.POST or None)
@@ -929,4 +955,167 @@ def instructor_student_detail_view(request):
 
     return render(request, 'instructor/student_performance.html', context)
 
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
+from django.contrib import messages as django_messages
+
+from .forms import MessageForm
+from .models.message import Message
+
+
+@login_required
+def inbox_view(request):
+    current_user = request.user.username
+    active_user = request.GET.get("active")
+
+    messages = Message.objects.filter(
+        Q(sender=current_user) | Q(receiver=current_user)
+    ).order_by("timestamp")
+
+    conversations = {}
+    for msg in messages:
+        other = msg.receiver if msg.sender == current_user else msg.sender
+        conversations.setdefault(other, []).append(msg)
+
+    return render(request, "user/inbox.html", {
+        "conversations": conversations,
+        "current_user": current_user,
+        "active_user": active_user
+    })
+
+
+@login_required
+def send_message_view(request):
+    initial = {}
+    if 'to' in request.GET:
+        initial['receiver'] = request.GET['to']
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user.username
+            message.save()
+
+            # 🧠 Detect if it's an AJAX fetch request
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'ok'})
+
+            # Fallback for regular form
+            messages.success(request, "Message sent successfully!")
+            return redirect(f'/inbox/?active={message.receiver}')
+
+    else:
+        form = MessageForm(initial=initial)
+
+    return render(request, 'user/send_message.html', {'form': form})
+
+
+@login_required
+def reply_message_view(request, message_id):
+    original = get_object_or_404(Message, pk=message_id)
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.sender = request.user.username
+            reply.receiver = original.sender
+            reply.save()
+            django_messages.success(request, "Reply sent!")
+            return redirect(f'/inbox/?active={message.receiver}')
+
+    else:
+        form = MessageForm(initial={'receiver': original.sender})
+
+    return render(request, 'user/reply_message.html', {
+        'form': form,
+        'original': original
+    })
+
+from django.contrib.auth.models import User
+
+from .models.instructors import Instructor
+from .models.students import Student
+from .forms import ProfileForm
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+    user_profile = user.userprofile
+
+    context = {
+        'user': user,
+        'user_profile': user_profile
+    }
+
+    if user_profile.user_type == 'instructor':
+        context['role_profile'] = Instructor.objects.filter(user=user).first()
+    elif user_profile.user_type == 'student':
+        context['role_profile'] = Student.objects.filter(id_user=user).first()
+
+    return render(request, 'user/profile.html', context)
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages as django_messages
+from .models import Student, Instructor
+from .forms import UserForm, StudentForm, InstructorForm
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Student, Instructor
+from .forms import UserForm, StudentForm, InstructorForm
+
+@login_required
+def edit_profile(request):
+    user = request.user
+
+    try:
+        user_profile = user.userprofile
+    except Exception as e:
+        print("User profile issue:", e)
+        return redirect('home')
+
+    role_instance = None
+    role_form_class = None
+
+    if user_profile.user_type == 'student':
+        try:
+            role_instance = Student.objects.get(id_user=user)
+            role_form_class = StudentForm
+        except Student.DoesNotExist:
+            print("Student not found")
+            return redirect('home')
+
+    elif user_profile.user_type == 'instructor':
+        try:
+            role_instance = Instructor.objects.get(user=user)
+            role_form_class = InstructorForm
+        except Instructor.DoesNotExist:
+            print("Instructor not found")
+            return redirect('home')
+
+    user_form = UserForm(request.POST or None, instance=user)
+    role_form = role_form_class(request.POST or None, request.FILES or None, instance=role_instance) if role_form_class else None
+
+    if request.method == 'POST':
+        if user_form.is_valid() and (not role_form or role_form.is_valid()):
+            user_form.save()
+            if role_form:
+                role_form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('view_profile')
+
+    return render(request, 'user/edit_profile.html', {
+        'user_form': user_form,
+        'student_form': role_form if user_profile.user_type == 'student' else None,
+        'instructor_form': role_form if user_profile.user_type == 'instructor' else None,
+        'role_profile': role_instance,
+    })
 
