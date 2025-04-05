@@ -53,9 +53,16 @@
         </li>
         {% else %}
         <li class="pc-item">
-          <a href="{% url 'update_profile' %}" class="pc-link">
-            <span class="pc-micon"><i data-feather="user"></i></span>
+          <a href="{% url 'edit_profile' %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="lock"></i></span>
             <span class="pc-mtext">Edit Profile</span>
+          </a>
+          
+        </li>
+        <li class="pc-item">
+          <a href="{% url 'inbox' %}" class="pc-link">
+            <span class="pc-micon"><i data-feather="mail"></i></span>
+            <span class="pc-mtext">Inbox</span>
           </a>
         </li>
         

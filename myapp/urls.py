@@ -13,8 +13,15 @@ urlpatterns = [
     path('home', views.home_view, name='home'),  # Home page
     path('index', views.home_view, name='home'), 
     path('index/', views.home_view, name='home'), 
+    path('inbox/', views.inbox_view, name='inbox'),
+    path('send-message/', views.send_message_view, name='send_message'),
+    path('reply/<int:message_id>/', views.reply_message_view, name='reply_message'),
+    path('user/profile/view/', views.profile_view, name='view_profile'),
+    path('user/profile/edit/', views.edit_profile, name='edit_profile'),
+    path('inbox/fetch/', views.fetch_messages_view, name='fetch_messages'),
+
  
-    path('user/profile/', views.update_profile, name='update_profile'),
+    path('user/profile/', views.edit_profile, name='edit_profile'),
 
     path(
         'accounts/login/',

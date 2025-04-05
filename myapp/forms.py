@@ -243,3 +243,55 @@ MultipleOptionFormSet = inlineformset_factory(
     extra=0,
     can_delete=False
 )
+
+from myapp.models.message import Message
+from django import forms
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['receiver', 'subject', 'content']
+        widgets = {
+            'receiver': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Receiver username or email'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Type your message here...',
+                'rows': 4
+            }),
+        }
+        labels = {
+            'receiver': 'To',
+            'subject': 'Subject',
+            'content': 'Message',
+        }
+
+from django import forms
+from .models import Student
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['n_gpa', 'd_starting_date', 'd_join_date']
+        widgets = {
+            'n_gpa': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'placeholder': 'Your GPA (e.g. 3.75)'
+            }),
+            'd_starting_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'd_join_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+        }
+        labels = {
+            'n_gpa': 'GPA',
+            'd_starting_date': 'Starting Date',
+            'd_join_date': 'Join Date',
+        }
