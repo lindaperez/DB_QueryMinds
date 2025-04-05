@@ -40,13 +40,9 @@
               <!-- Role selection dropdown -->
            
               <div class="form-group mb-3">
-                <label for="{{ form.user_type.id_for_label }}">Select Role</label>
                 {{ form.user_type }}
-                {% if form.user_type.errors %}
-                  <span class="d-block mt-1 text-danger">{{ form.user_type.errors }}</span>
-                {% endif %}
+                <span class="d-block mt-1 text-danger">{{ form.user_type.errors }}</span>
               </div>
-              
             
               <div class="d-flex mt-1 justify-content-between">
                 <div class="form-check">

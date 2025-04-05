@@ -1,0 +1,180 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Learning Path {% endblock %}
+
+{% block content %}
+
+<div class="pc-container">
+  <div class="pc-content">
+
+    <!-- Page Header -->
+
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">
+                <a href="/"> 📚 Your Learning Path</a>
+              </h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">Student Dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chapter Menu -->
+    <div class="card p-3 mb-4">
+      <h5>🔖 Chapters in this path:</h5>
+      <div class="chapter-menu-scroll">
+        {% for chapter in all_chapters %}
+        <a href="#chapter-{{ chapter.id_learningchapter }}"
+        class="chapter-link 
+               {% if chapter.completed %}completed{% elif not chapter.available %}locked{% endif %}">
+       {% if chapter.completed %}✔️{% elif not chapter.available %}🔒{% else %}📘{% endif %}
+       Chapter {{ forloop.counter }}
+     </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Chapters and Exercises -->
+    {% for data in chapters %}
+    <div class="card chapter-card" id="chapter-{{ data.chapter.id_learningchapter }}" data-chapter="{{ forloop.counter }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">📘 Chapter {{ forloop.counter }}: </h5>
+      </div>
+      <div class="card-body">
+        <p>{{ data.chapter.v_content|safe }}</p>
+
+        {% if data.exercises %}
+          {% for ex in data.exercises %}
+          <div class="card exercise-card {% if forloop.first %}active{% endif %}" 
+               id="exercise-{{ data.chapter.id_learningchapter }}-{{ forloop.counter }}"
+               data-exercise="{{ forloop.counter }}">
+            <div class="card-body">
+              <p><strong>Exercise {{ forloop.counter }}.</strong></p><p> {{ ex.exercise.description }}</p>
+
+              <form onsubmit="submitAnswer(event, {{ data.chapter.id_learningchapter }}, {{ forloop.counter }})">
+                {% csrf_token %}
+                <input type="hidden" name="exercise_id" value="{{ ex.exercise.pk }}">
+                <input type="hidden" name="chapter_id" value="{{ data.chapter.id_learningchapter }}">
+              
+                {% if ex.options|length > 1 %}
+                  {% for opt in ex.options %}
+                    <div class="form-check">
+                      <input class="form-check-input"
+                            type="radio"
+                            name="selected_option_{{ ex.exercise.id_exercise }}"
+                            value="{{ opt.id_option }}"
+                            {% if opt.id_option in ex.selected_option_ids %}checked{% endif %}
+                            {% if ex.submitted %}disabled{% endif %}>
+                      <label class="form-check-label">{{ opt.v_option }}</label>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="form-group mt-2">
+                    <label for="answer_text_{{ ex.exercise.pk }}"><strong>Your Answer:</strong></label>
+                    <input type="text"
+                           name="answer_text"
+                           id="answer_text_{{ ex.exercise.pk }}"
+                           class="form-control"
+                           {% if ex.submitted %}value="{{ ex.student_answer }}" disabled{% endif %}>
+                  </div>
+                {% endif %}
+              
+                <button type="submit"
+                      class="btn btn-success mt-2"
+                      {% if ex.submitted %}disabled{% endif %}>
+                  {% if ex.submitted %}✅ Submitted{% else %}Submit{% endif %}
+                </button>
+                <span class="submitted-msg ml-3 text-success" style="display: none;">✅ Answer submitted!</span>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">📖 This chapter has no exercises. Please read the content and mark it as complete.</div>
+          <form method="post" action="{% url 'mark_chapter_read' %}">
+            {% csrf_token %}
+            <input type="hidden" name="chapter_id" value="{{ data.chapter.id_learningchapter }}">
+            <button class="btn btn-success mt-3" onclick="markChapterRead({{ data.chapter.id_learningchapter }}, {{ forloop.counter }})">
+               Mark as Read and Continue
+            </button>
+          </form>
+        {% endif %}
+
+        {% if data.chapter.completed %}
+        <div class="alert alert-success mt-4">🎉 You completed this chapter! Great job!</div>
+        {% endif %}
+
+        <div class="text-right mt-4" id="continue-btn-{{ data.chapter.id_learningchapter }}" style="display: none;">
+          {% if not forloop.last %}
+            <button class="btn btn-outline-primary" onclick="goToNextChapter({{ forloop.counter }})">➡️ Continue to Chapter {{ forloop.counter|add:1 }}</button>
+          {% else %}
+            <div class="alert alert-primary">🏁 You've reached the end of your learning path!</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function submitAnswer(event, chapterId, currentExercise) {
+  event.preventDefault();
+
+  const currentExerciseEl = document.getElementById(`exercise-${chapterId}-${currentExercise}`);
+  currentExerciseEl.querySelector('.submitted-msg').style.display = 'inline';
+  currentExerciseEl.querySelector('button[type="submit"]').disabled = true;
+
+  setTimeout(() => {
+    currentExerciseEl.classList.remove('active');
+    const nextExercise = document.getElementById(`exercise-${chapterId}-${currentExercise + 1}`);
+    if (nextExercise) {
+      nextExercise.classList.add('active');
+    } else {
+      document.getElementById(`continue-btn-${chapterId}`).style.display = 'block';
+    }
+  }, 500);
+}
+
+function goToNextChapter(currentChapterNumber) {
+  const currentCard = document.querySelector(`[data-chapter="${currentChapterNumber}"]`);
+  const nextCard = document.querySelector(`[data-chapter="${currentChapterNumber + 1}"]`);
+
+  if (currentCard) currentCard.style.display = 'none';
+  if (nextCard) {
+    nextCard.style.display = 'block';
+    const firstExercise = nextCard.querySelector('.exercise-card');
+    if (firstExercise) firstExercise.classList.add('active');
+    nextCard.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+function markChapterRead(chapterId, chapterIndex) {
+  fetch("{% url 'mark_chapter_read' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `chapter_id=${chapterId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      goToNextChapter(chapterIndex);
+    }
+  });
+}
+
+</script>
+{% endblock %}

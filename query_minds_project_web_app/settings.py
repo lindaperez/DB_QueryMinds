@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'core',
-    'django_quill', # For HTML learning_chapter content 
+   
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -147,9 +148,6 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Media files (profile pictures, uploads, etc.)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
