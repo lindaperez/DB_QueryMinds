@@ -1,0 +1,23 @@
+runtime: python312  # Adjust based on your Python version
+
+env: standard
+entrypoint: gunicorn -b :$PORT query_minds_project_web_app.wsgi:application  # Use your actual project name
+
+instance_class: F2
+
+env_variables:
+  DJANGO_SETTINGS_MODULE: "query_minds_project_web_app.settings"
+
+
+
+- url: /.*
+  script: auto
+
+
+beta_settings:
+    cloud_sql_instances: queryminds:REGION:neu-db-project
+
+
+handlers:
+- url: /static
+  static_dir: staticfiles/
