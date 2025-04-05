@@ -1,0 +1,14 @@
+asgiref==3.8.1
+cffi==1.17.1
+cryptography==44.0.1
+Django==5.1.5
+gunicorn==23.0.0
+packaging==24.2
+pycparser==2.22
+PyMySQL==1.1.1
+sqlparse==0.5.3
+
+
+openai==1.69.0
+mysql-connector-python==9.2.0
+django-ckeditor
