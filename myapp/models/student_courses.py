@@ -8,3 +8,6 @@ class StudentCourse(models.Model):
         managed = False
         db_table = 'STUDENT_COURSE'
         unique_together = ('student', 'course')
+    
+    def __str__(self):
+        return f"Student {self.student} registered to the course {self.course}"

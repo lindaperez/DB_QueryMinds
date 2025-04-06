@@ -124,8 +124,18 @@ def register(request):
       
         all_chpters = LearningChapter.objects.filter(instructor=course.instructor)
         for chapter in all_chpters:
-            # Use correct field names from your model
             
+            # Registering Student to the corresponding Course
+            student_course, created = StudentCourse.objects.get_or_create(
+                student=student,
+                course=course,
+                defaults={'d_begin': now().date(), 'd_finish': None}
+            )
+            if created:
+                print(f"StudentCourse created: {student_course}")
+            else:
+                print(f"StudentCourse already exists: {student_course}")
+            # Registering Student to the corresponding Course Learning Chapters
             chapter_student, created = ChapterStudent.objects.get_or_create(
                 student=student,
                 learning_chapter=chapter,
@@ -135,6 +145,9 @@ def register(request):
                 print(f"ChapterStudent created: {chapter_student}")
             else:
                 print(f"ChapterStudent already exists: {chapter_student}")
+                
+                
+                
       messages.success(request, "✅ Your account has been created successfully!")
       print('Account created successfully!')
       return redirect('/accounts/login/')
@@ -781,8 +794,9 @@ def course_performance(request):
     print(f"CHAPTERS {chapters}")
     student_ids = StudentCourse.objects.filter(course=course).values_list('student', flat=True).distinct()
     students = Student.objects.filter(pk__in=student_ids)
-    
-    all_exercises = Exercise.objects.filter()
+    print(f"STUDENTS {student_ids.count()}")
+    all_exercises = Exercise.objects.filter(
+    chapterexercise__id_learningchapter__in=chapters).distinct()
     total_exercises = all_exercises.count()
     
     for stu in students:
@@ -803,9 +817,10 @@ def course_performance(request):
         # 3. Compute progress %
         if total_exercises > 0:
             progress = round((attempted_exercises / total_exercises) * 100)
+            print(f"Progress for {stu}: {progress}%")
         else:
             progress = 0
-
+        
         # Attach progress to student
         stu.progress = progress
         
@@ -816,7 +831,9 @@ def course_performance(request):
         stu.chapter_score = round(chapter_score, 2)
 
     total_students = students.count()
+    print(f"TOTAL STUDENTS {total_students}")
     total_chapters = chapters.count()
+    print(f"TOTAL CHAPTERS {total_chapters}")
 
     completed = ChapterStudent.objects.filter(
         learning_chapter__in=chapters,
@@ -824,6 +841,8 @@ def course_performance(request):
         d_finish__isnull=False
     )
     completed_chapters = completed.count()
+    print(f"COMPLETED CHAPTERS {[int(completed_chapters//total_students), int((total_students - completed_chapters)//total_students)]}")
+
 
     # Chapter performance
     chapter_scores = ChapterStudent.objects.filter(
@@ -889,6 +908,7 @@ def course_performance(request):
         "evalScores": [float(score) for score in eval_avg_scores],
         "completionLabels": ['Completed', 'In Progress'],
         "completionValues": [int(completed_chapter_count), int(total_chapter_count - completed_chapter_count)],
+        "studentcompletionValues": [int(completed_chapters//total_students), int((total_students - completed_chapters)//total_students)],
         "attemptLabels": list(attempt_data.keys()),
         "attemptValues": list(attempt_data.values()),
     })
