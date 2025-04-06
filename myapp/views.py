@@ -128,8 +128,7 @@ def register(request):
             # Registering Student to the corresponding Course
             student_course, created = StudentCourse.objects.get_or_create(
                 student=student,
-                course=course,
-                defaults={'d_begin': now().date(), 'd_finish': None}
+                course=course
             )
             if created:
                 print(f"StudentCourse created: {student_course}")
@@ -841,7 +840,7 @@ def course_performance(request):
         d_finish__isnull=False
     )
     completed_chapters = completed.count()
-    print(f"COMPLETED CHAPTERS {[int(completed_chapters//total_students), int((total_students - completed_chapters)//total_students)]}")
+    #print(f"COMPLETED CHAPTERS total chapters:{total_chapters} completed:{completed_chapters},totalstudents* totalchapters: {total_students*total_chapters}, {(completed_chapters/(total_students*total_chapters)*100)}totalchaptertes - completedchapters {total_chapters - completed_chapters}")
 
 
     # Chapter performance
@@ -901,14 +900,18 @@ def course_performance(request):
             attempt_data["3+ Attempts"] += item["count"]
 
     # ✅ JSON-safe chart data
+    total_completition = 0
+    if total_students*total_chapters>0:
+        total_completition = completed_chapters/(total_students*total_chapters)
+        
     dashboard_data = json.dumps({
         "chapterLabels": chapter_labels,
         "chapterScores": [float(score) for score in chapter_avg_scores],
         "evalLabels": eval_labels,
         "evalScores": [float(score) for score in eval_avg_scores],
-        "completionLabels": ['Completed', 'In Progress'],
+        "completionLabels": ['Completed %', 'In Progress %'],
         "completionValues": [int(completed_chapter_count), int(total_chapter_count - completed_chapter_count)],
-        "studentcompletionValues": [int(completed_chapters//total_students), int((total_students - completed_chapters)//total_students)],
+        "studentcompletionValues": [total_completition*100, abs(1-total_completition)*100],
         "attemptLabels": list(attempt_data.keys()),
         "attemptValues": list(attempt_data.values()),
     })
