@@ -1,0 +1,174 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+
+
+
+
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<div class="pc-container">
+  <div class="pc-content">
+    <div class="container-fluid">
+      <div class="row" style="height: calc(80vh - 80px);">
+
+        <!-- Sidebar: Users List -->
+        <div class="col-md-4 border-end bg-light overflow-auto">
+          <div class="p-3 border-bottom">
+            <strong>💬 Conversations</strong>
+          </div>
+          <div class="list-group">
+            {% for user, msgs in conversations.items %}
+              <a href="?active={{ user }}" class="list-group-item list-group-item-action {% if active_user == user %}active{% endif %}">
+                <div class="d-flex align-items-center">
+                  <img src="{% static 'assets/images/user/avatar-1.jpg' %}" class="rounded-circle me-2" width="40" height="40">
+                  <div>
+                    <div class="fw-bold">{{ user }}</div>
+                    <small class="text-muted">
+                      {% with msgs|last as last_msg %}
+                        {{ last_msg.timestamp|date:"M d, H:i" }}
+                      {% endwith %}
+                    </small>
+                    
+                  </div>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Right: Chat Box -->
+        <div class="col-md-8 d-flex flex-column justify-content-between">
+          <div class="p-3 overflow-auto" style="flex: 1;">
+            {% if active_user %}
+              <h5 class="border-bottom pb-2 mb-3">Chat with {{ active_user }}</h5>
+              {% for user, msgs in conversations.items %}
+            {% if user == active_user %}
+              {% for msg in msgs %}
+                <div class="chat-message {% if msg.sender == current_user %}sent{% else %}received{% endif %}">
+                  {% if msg.sender != current_user %}
+                    <img src="{% static 'assets/images/user/avatar-1.jpg' %}" class="avatar me-2">
+                  {% endif %}
+                  <div class="bubble">
+                    <div class="sender">{{ msg.sender }}</div>
+                    <div class="text">{{ msg.content }}</div>
+                    <div class="timestamp">{{ msg.timestamp|date:"M d, Y H:i" }}</div>
+                  </div>
+                  {% if msg.sender == current_user %}
+                    <img src="{% static 'assets/images/user/avatar-1.jpg' %}" class="avatar ms-2">
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+          
+
+            {% else %}
+              <p class="text-muted mt-5 text-center">Select a user from the left to view conversation.</p>
+            {% endif %}
+          </div>
+
+          <!-- Reply Box -->
+          {% if active_user %}
+          <div class="p-3 border-top">
+            <form method="POST" action="{% url 'send_message' %}?to={{ active_user }}">
+              {% csrf_token %}
+              <input type="hidden" name="receiver" value="{{ active_user }}">
+              <div class="input-group">
+                <input type="text" name="content" class="form-control" placeholder="Reply to {{ active_user }}" required>
+                <button type="submit" class="btn btn-primary">Send</button>
+              </div>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+
+  </div>
+</div>
+{% block extrastyle %}
+<style>
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  .list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+  }
+
+  .list-group-item.active .text-muted {
+    color: #ddd !important;
+  }
+  .chat-message {
+    display: flex;
+    margin: 10px 0;
+    max-width: 75%;
+  }
+  .chat-message.sent {
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+  .chat-message.received {
+    justify-content: flex-start;
+    margin-right: auto;
+  }
+  .chat-message .bubble {
+    padding: 12px 18px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    word-break: break-word;
+  }
+  .chat-message.sent .bubble {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .chat-message.received .bubble {
+    background-color: #f1f1f1;
+    color: #000;
+  }
+  .sender {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
+
+
+
+
+  .timestamp {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    text-align: right;
+    color: #666;
+  }
+</style>
+<script>
+  const activeUser = "{{ active_user|escapejs }}";
+
+  function fetchMessages() {
+    if (!activeUser) return;
+
+    fetch(`/inbox/fetch/?user=${activeUser}`)
+      .then(response => response.text())
+      .then(html => {
+        document.querySelector(".p-3.overflow-auto").innerHTML = `
+          <h5 class="border-bottom pb-2 mb-3">Chat with ${activeUser}</h5>
+          ${html}
+        `;
+      });
+  }
+
+  setInterval(fetchMessages, 3000); // Fetch every 3 seconds
+</script>
+
+{% endblock extrastyle %}
+{% endblock %}
