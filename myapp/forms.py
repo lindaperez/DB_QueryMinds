@@ -243,3 +243,28 @@ MultipleOptionFormSet = inlineformset_factory(
     extra=0,
     can_delete=False
 )
+
+# Inbox
+from myapp.models.message import Message
+from django import forms
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['receiver', 'subject', 'content']
+        widgets = {
+            'receiver': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Receiver username or email'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Type your message here...',
+                'rows': 4
+            }),
+        }
+        labels = {
+            'receiver': 'To',
+            'subject': 'Subject',
+            'content': 'Message',
+        }

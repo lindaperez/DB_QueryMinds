@@ -72,6 +72,11 @@ urlpatterns = [
     path('llmins/onestu/', LLMInstructor.llm_view_record, name='llm_view_record_ins'),
     path('llmins/aiassist/', LLMInstructor.llm_view_AIassist, name='llm_AIassist'),
 
+    #inbox
+    path('inbox/', views.inbox_view, name='inbox'),
+    path('send-message/', views.send_message_view, name='send_message'),
+    path('reply/<int:message_id>/', views.reply_message_view, name='reply_message'),
+    path('inbox/fetch/', views.fetch_messages_view, name='fetch_messages'),
 ]
 
 

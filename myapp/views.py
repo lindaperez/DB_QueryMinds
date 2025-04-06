@@ -929,4 +929,100 @@ def instructor_student_detail_view(request):
 
     return render(request, 'instructor/student_performance.html', context)
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
+from django.contrib import messages as django_messages
 
+from .forms import MessageForm
+from .models.message import Message
+
+
+@login_required
+def inbox_view(request):
+    current_user = request.user.username
+    active_user = request.GET.get("active")
+
+    messages = Message.objects.filter(
+        Q(sender=current_user) | Q(receiver=current_user)
+    ).order_by("timestamp")
+
+    conversations = {}
+    for msg in messages:
+        other = msg.receiver if msg.sender == current_user else msg.sender
+        conversations.setdefault(other, []).append(msg)
+
+    return render(request, "user/inbox.html", {
+        "conversations": conversations,
+        "current_user": current_user,
+        "active_user": active_user
+    })
+
+
+@login_required
+def send_message_view(request):
+    initial = {}
+    if 'to' in request.GET:
+        initial['receiver'] = request.GET['to']
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user.username
+            message.save()
+
+            # 🧠 Detect if it's an AJAX fetch request
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'ok'})
+
+            # Fallback for regular form
+            messages.success(request, "Message sent successfully!")
+            return redirect(f'/inbox/?active={message.receiver}')
+
+    else:
+        form = MessageForm(initial=initial)
+
+    return render(request, 'user/send_message.html', {'form': form})
+
+
+@login_required
+def reply_message_view(request, message_id):
+    original = get_object_or_404(Message, pk=message_id)
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.sender = request.user.username
+            reply.receiver = original.sender
+            reply.save()
+            django_messages.success(request, "Reply sent!")
+            return redirect(f'/inbox/?active={message.receiver}')
+
+    else:
+        form = MessageForm(initial={'receiver': original.sender})
+
+    return render(request, 'user/reply_message.html', {
+        'form': form,
+        'original': original
+    })
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from .models.message import Message
+from django.db.models import Q
+
+@login_required
+def fetch_messages_view(request):
+    current_user = request.user.username
+    other_user = request.GET.get("user")
+    
+    messages = Message.objects.filter(
+        Q(sender=current_user, receiver=other_user) |
+        Q(sender=other_user, receiver=current_user)
+    ).order_by("timestamp")
+
+    return HttpResponse(render_to_string("partials/chat_messages.html", {
+        "messages": messages,
+        "current_user": current_user
+    }))
