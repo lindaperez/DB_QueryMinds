@@ -385,7 +385,6 @@ def instructor_dashboard(request):
                         
                         
         if request.method == 'POST' and 'remove_exercise' in request.POST:
-            message_already_handled = False
             exercise_id = request.POST.get('exercise_id')
             chapter_id = request.POST.get('chapter_id')
 

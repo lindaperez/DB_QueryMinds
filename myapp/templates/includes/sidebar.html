@@ -114,13 +114,17 @@
         </li>
         <li class="pc-item">
           <a href="{% url "chapter_dashboard" %}" class="pc-link">
-   
+            <span class="pc-micon">
+              <i data-feather="layers"></i>
+            </span>
             <span class="pc-mtext"> Manage Learning Chapters </span>
           </a>
         </li>
         <li class="pc-item">
           <a href="{% url "course_performance" %}" class="pc-link">
-   
+            <span class="pc-micon">
+              <i data-feather="trending-up"></i>
+            </span>
             <span class="pc-mtext"> Course Performance </span>
           </a>
         </li>
@@ -128,8 +132,18 @@
        
         {% if request.user.userprofile.user_type == "student" %} 
         <li class="pc-item">
+          <a href="{% url "home" %}" class="pc-link">
+            <span class="pc-micon">
+              <i data-feather="home"></i>
+            </span>
+            <span class="pc-mtext">Home</span>
+          </a>
+        </li>
+        <li class="pc-item">
           <a href="{% url "student_learning_view" %}" class="pc-link">
-         
+            <span class="pc-micon">
+            <i data-feather="map"></i>
+            </span>
             <span class="pc-mtext"> My Learning Path </span>
           </a>
         </li>
