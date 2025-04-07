@@ -56,7 +56,10 @@
 
     <!-- Chapters and Exercises -->
     {% for data in chapters %}
-    <div class="card chapter-card" id="chapter-{{ data.chapter.id_learningchapter }}" data-chapter="{{ forloop.counter }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
+    
+    <div class="card chapter-card" id="chapter-{{ data.chapter.id_learningchapter }}" data-chapter="{{ forloop.counter }}" style="display: {% if data.chapter.id_learningchapter|stringformat:'s' == active_chapter_id %}block{% elif not active_chapter_id and forloop.first %}block{% else %}none{% endif %};">
+
+
       <div class="card-header bg-primary text-white">
         <h5 class="mb-0">📘 Chapter {{ forloop.counter }}: </h5>
       </div>
@@ -79,7 +82,6 @@
                 {% csrf_token %}
                 <input type="hidden" name="exercise_id" value="{{ ex.exercise.pk }}">
                 <input type="hidden" name="chapter_id" value="{{ data.chapter.id_learningchapter }}">
-              
                 {% if ex.options|length > 1 %}
                   {% for opt in ex.options %}
  

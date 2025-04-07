@@ -602,6 +602,8 @@ def student_learning_view(request):
             print(f"Saved Answer: {answer_obj.pk}, {answer_obj.v_answer}Score: {answer_obj.n_score}, Is Correct: {answer_obj.b_iscorrect}")
 
         messages.success(request, "✅ Your answer has been submitted.")
+
+    
         # Finish the chapter in case student answer the last question 
         # calculate # exerc per chapter
         # All exercises in this chapter
@@ -629,8 +631,10 @@ def student_learning_view(request):
                 print(f"ChapterStudent object saved: {chapter_student}")
             print(f"ChapterStudent object saved: {chapter_student}")
             print("✅ ChapterStudent saved successfully.")
+    
+        return redirect(f"{request.path}?chapter_id={chapter_id}&exercise_id={exercise_id}")
 
-
+    active_chapter_id = request.GET.get("chapter_id")
     # Get all chapters and sort them
     all_chapters_qs = LearningChapter.objects.order_by("id_learningchapter")
     all_chapters = list(all_chapters_qs)  # Convert to list for index-based operations
@@ -742,7 +746,8 @@ def student_learning_view(request):
     return render(request, "student/learning_path.html", {
         "student": student,
         "chapters": chapter_data,
-        "all_chapters": all_chapters
+        "all_chapters": all_chapters,
+        "active_chapter_id" : request.GET.get("chapter_id")
     })
     
 
