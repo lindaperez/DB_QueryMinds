@@ -31,7 +31,20 @@ def home(request):
     return render(request, 'home.html', {'message': 'Welcome to the Home Page'})
 
 def home_view(request):
-    return render(request, 'home.html', {'message': 'Welcome to the Home Page'})
+    user = request.user
+    profile =  user.userprofile
+    course = Course.objects.get(pk=6) 
+    if not user.is_authenticated:
+        return redirect('login')
+
+    context = {
+        'user': user,
+        'profile': profile,
+        'course': course,
+    }
+    
+    return render(request, 'home.html', context)
+
 
 # Log In
 def login_view(request):
@@ -508,7 +521,7 @@ def student_learning_view(request):
         # Clear old options if any
         AnswerMultipleOption.objects.filter(answer=answer_obj).delete()
         
-        if selected_option_ids:
+        if answer_text == "" and selected_option_ids:
             
             selected_ids = set(map(int, selected_option_ids))
             correct_ids = set(
@@ -569,6 +582,7 @@ def student_learning_view(request):
             ).first()
 
             if correct_option:
+                print(f"Correct option: ({correct_option.v_option}) and ANSWER TEXT: ({answer_text})")
                 correct_text = correct_option.v_option.strip()
                 answer_obj.b_iscorrect = 1 if (answer_text.strip().lower() == correct_text.lower()) else 0
                 
@@ -616,8 +630,7 @@ def student_learning_view(request):
                 print(f"ChapterStudent object saved: {chapter_student}")
             print(f"ChapterStudent object saved: {chapter_student}")
             print("✅ ChapterStudent saved successfully.")
-        else:   
-            print(f"NOT ENTERED {answered_exercise_ids}  {exercise_ids}")
+
 
     # Get all chapters and sort them
     all_chapters_qs = LearningChapter.objects.order_by("id_learningchapter")
@@ -686,6 +699,7 @@ def student_learning_view(request):
                     if len(options_all) == 1:
                         print(f"✅ Answer tex")
                         answer_text = answer.v_answer
+                        is_correct = answer.b_iscorrect
                     else:
                         # Get the student's selected option IDs for this exercise                        
                         selected_option_ids = list(

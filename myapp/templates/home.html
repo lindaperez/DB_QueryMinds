@@ -37,11 +37,11 @@
                 <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
                 {% if request.user.userprofile.user_type == "student" %}
                 <div class="navbar-text">
-                    Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
+                    (Student) <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong> | <strong>{{ request.user.username }}</strong> 
                 </div>
                 {% else %}
                 <div class="navbar-text">
-                    Instructor Name: <strong>John Doe</strong> 
+                    (Instructor)  <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong> | <strong>{{ request.user.username }}</strong>
                 </div>
                 {% endif %}
 
@@ -55,16 +55,17 @@
                     <div>
                     <div class="card p-3">
                         {% if request.user.userprofile.user_type == "student" %}
-                        <h4 class="text-primary">Student Information</h4>
-                        <div><strong>Name:</strong> John Doe</div>
-                        <div><strong>Student ID:</strong> 20231234</div>
-                        <div><strong>Email:</strong> johndoe@example.com</div>
-                        <div><strong>Registration Date:</strong> 2024-01-01</div>
-                        {% else %}
-                        <h4 class="text-primary">Instructor Information</h4>
-                        <div><strong>Name:</strong> John Doe</div>
-                        <div><strong>Specialties</strong> ...</div>
-                        <div><strong>Bio:</strong> ..</div>
+                        <a href="{% url 'update_profile' %}" class="text-primary">Student Information</a>
+                        <div><strong>Full Name:</strong>{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                        <div><strong>Student ID:</strong> {{ request.user.student.pk }}</div>
+                        <div><strong>Email:</strong> {{ request.user.email }}</div>
+                        <div><strong>Registration Date:</strong> {{ request.user.date_joined }}</div>
+                        {% elif request.user.userprofile.user_type == "instructor"%}
+                        <h4 class="text-primary"><a href="{% url 'update_profile' %}" class="text-primary">Instructor Information</a></h4>
+                        <div><strong>Full Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</div>
+                        <div><strong>Instructor ID:</strong> {{ request.user.instructor.pk }}</div>
+                        <div><strong>Specialty:</strong> {{ request.user.instructor.v_specialty }}</div>
+                        <div><strong>Bio:</strong>{{ request.user.instructor.v_bio|truncatechars:90 }}</div>
 
                         {% endif %}
 
@@ -92,8 +93,9 @@
                 </div>
                 <!-- Course Chapters Section -->
                 <div class=" card col-md-8">
-                    <h2 class="text-primary"> Introduction to Databases</h2>
+                    <h1 class="text-primary">    {{course.v_subject}}</h1>
                     <div class="card p-3">
+                   
                     <div class="card p-3">
                
                         <div class="sql-course-index">
