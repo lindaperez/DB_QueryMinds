@@ -1,9 +1,15 @@
-  <!-- Top Navigation Bar -->
-  <nav class="navbar navbar-expand-lg">
+<!-- Top Navigation Bar -->
+<nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand" href="#">QueryMinds: SQL Training with LLM</a>
         <div class="navbar-text">
-            Student Name: <strong>John Doe</strong> | Account ID: <strong>DB20231234</strong>
+          {% if user.is_authenticated %}
+            Student Name: <strong>{{ user.first_name }} {{ user.last_name }}</strong> |
+            Account ID: <strong>{{ user.profile.account_id }}</strong>
+          {% else %}
+            Welcome, <strong>Guest</strong>
+          {% endif %}
         </div>
     </div>
-</nav>
+  </nav>
+  
