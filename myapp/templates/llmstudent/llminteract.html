@@ -1,59 +1,96 @@
+{% extends "layouts/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SQLexe</title>
-    <link rel="stylesheet" href="{% static 'css/stylellm.css' %}">
-</head>
-<body>
 
-<div class="container">
-    <form action="{% url 'clear_tasks_student' %}" method="post" class="exit-container">
-        {% csrf_token %}
-        <button class="exit-btn">👋 EXIT</button>
-    </form>
+{% block title %}Instructor Views{% endblock title %}
 
-    <div class="header">
-        <h1>📝 MySQL Training with LLM 💡</h1>
-        <p>Input the MySQL Topic You Want to Practice（🌟 ex Partition By, With, Group By）</p>
-    </div>
+{% block content %}
+<div class="pc-container">
+  <div class="pc-content">
 
-    {% if error %}
-    <div class="message error">{{ error }}</div>
-    {% endif %}
-
-    {% if message %}
-    <div class="message success">{{ message }}</div>
-    {% endif %}
-
-    {% if not tasks_generated %}
-
-    <form class="upload-form" method="POST" action="{% url 'generate_from_keyword' %}" onsubmit="showLoading()">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="keyword">Key Words:</label>
-            <input type="text" id="keyword" name="keyword" required placeholder="ex. Partition By">
+    <!-- 页面标题和导航 -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">
+                <a href="/"> 📚 LLM Query Practice Report</a>
+              </h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">Home</li>
+            </ul>
+          </div>
         </div>
-        <button type="submit">Generate Exercise</button>
-    </form>
-    <!-- 转圈加载动画 -->
-    <div id="loading-spinner" class="loading-container" style="display: none;">
-        <div class="spinner"></div>
-        <p>Generating tasks, please wait...</p>
+      </div>
     </div>
-    <!-- 转圈加载动画 -->
-    {% else %}
-    <div class="task-button">
-        <a href="{% url 'view_tasks_student' %}"><button>Start Practicing</button></a>
-    </div>
-    {% endif %}
-</div>
 
+    <!-- LLM练习模块 -->
+    <div class="container">
+      <!-- EXIT 按钮 -->
+      <form action="{% url 'clear_tasks_student' %}" method="post" style="position: absolute; top: 10px; right: 30px; z-index: 10;">
+        {% csrf_token %}
+        <button style="background-color: #007bff; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; font-weight: 400; text-align: center; vertical-align: middle; user-select: none; line-height: 1.5;">👋 EXIT</button>
+      </form>
+
+      <!-- 标题和说明 -->
+      <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #ddd; padding-bottom: 25px; background: linear-gradient(to bottom, #ffffff, #f9f9f9); border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 36px; font-weight: 700; color: #2c3e50; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05);">📝 MySQL Training with LLM 💡</h1>
+        <p style="font-size: 16px; color: #555; line-height: 1.6; margin: 6px 0;">Input the MySQL Topic You Want to Practice（🌟 ex Partition By, With, Group By）</p>
+      </div>
+
+      <!-- 消息提示 -->
+      {% if error %}
+      <div style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;">{{ error }}</div>
+      {% endif %}
+
+      {% if message %}
+      <div style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">{{ message }}</div>
+      {% endif %}
+
+      <!-- 表单区 -->
+      {% if not tasks_generated %}
+      <form class="upload-form" method="POST" action="{% url 'generate_from_keyword' %}" onsubmit="showLoading()" style="margin-bottom: 30px;">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+          <label for="keyword" style="display: block; margin-bottom: 8px; font-weight: bold;">Key Words:</label>
+          <input type="text" id="keyword" name="keyword" required placeholder="ex. Partition By" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+        </div>
+        <button type="submit" style="background-color: #007bff; color: white; padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; margin-bottom: 8px; width: 220px; transition: background-color 0.2s ease; font-weight: 400; text-align: center; vertical-align: middle; user-select: none; line-height: 1.5;">Generate Exercise</button>
+      </form>
+
+      <!-- 加载动画 -->
+      <div id="loading-spinner" style="display: none; flex-direction: column; align-items: center; margin-top: 20px; font-size: 16px; color: #555; animation: fadeIn 0.5s ease-in-out;">
+        <div style="width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;"></div>
+        <p>Generating tasks, please wait...</p>
+      </div>
+
+      {% else %}
+      <div style="display: block; width: 100%; text-align: center; margin-top: 10px; padding: 10px; margin-bottom: 5px;">
+        <a href="{% url 'view_tasks_student' %}" style="background-color: #007bff; color: white; padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; margin-bottom: 8px; width: 220px; transition: background-color 0.2s ease; display: inline-block; text-decoration: none; text-align: center; font-weight: 400; vertical-align: middle; user-select: none; line-height: 1.5;">Start Practicing</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
 <script>
-    function showLoading() {
-        document.getElementById("loading-spinner").style.display = "flex";
-    }
+  function showLoading() {
+    document.getElementById("loading-spinner").style.display = "flex";
+  }
 </script>
-</body>
-</html>
+<style>
+  @keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+</style>
+{% endblock extra_js %}
