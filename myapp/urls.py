@@ -9,8 +9,11 @@ from . import LLMStudent
 from . import LLMInstructor
 
 urlpatterns = [
+    
+    path('example', views.example, name='example'),  # Example sidebar
     path('', views.home_view, name='home'),  # Home page
     path('home', views.home_view, name='home'),  # Home page
+    
     path('index', views.home_view, name='home'), 
     path('index/', views.home_view, name='home'), 
  

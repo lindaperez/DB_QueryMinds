@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     USER_TYPE_CHOICES = [
-        ('', 'User Role'),  # 👈 default empty choice
+        ('', 'User Role'),  
         ('instructor', 'Instructor'),
         ('student', 'Student'),
     ]

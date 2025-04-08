@@ -30,13 +30,16 @@ import json
 def home(request):
     return render(request, 'home.html', {'message': 'Welcome to the Home Page'})
 
+def example(request):
+    return render(request, 'example.html', {'message': 'Welcome to the Example'})
+
 def home_view(request):
     user = request.user
-    profile =  user.userprofile
-    course = Course.objects.get(pk=6) 
     if not user.is_authenticated:
         return redirect('login')
-
+    
+    profile =  user.userprofile
+    course = Course.objects.get(pk=6) 
     context = {
         'user': user,
         'profile': profile,
