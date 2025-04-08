@@ -1,129 +1,260 @@
+{% extends "layouts/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Task</title>
-    <link rel="stylesheet" href="{% static 'css/stylellm.css' %}">
-</head>
 
-<body>
+{% block title %}Task{% endblock title %}
 
-<div class="container">
-    <form action="{% url 'clear_tasks_student' %}" method="post" class="exit-container">
-        {% csrf_token %}
-        <button class="exit-btn">👋 EXIT</button>
-    </form>
-
-    <div class="header">
-        <h1>📝 SQL Practice Tasks 💡</h1>
-        <p>You have a "Company" database. Click "📂 Check the schema" to view the table and complete tasks 1 to task 3.</p>
-        <p> Write your SQL queries for each task and get evaluated by the LLM.✅ </p>
-    </div>
-<!--    reference table-->
-    <div class="center-btn">
-    <button id="toggle-schema-btn" class="toggle-btn">📂 Check the schema</button>
-    </div>
-    <div id="reference-schema" class="reference-tables" style="display: none;">
-    <h2>EMPLOYEE Table</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Fname</th><th>Minit</th><th>Lname</th><th>Ssn</th><th>Bdate</th>
-                <th>Address</th><th>Sex</th><th>Salary</th><th>Super_ssn</th><th>Dno</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>John</td><td>B</td><td>Smith</td><td>123456789</td><td>1965-01-09</td><td>731 Fondren, Houston, TX</td><td>M</td><td>30000</td><td>333445555</td><td>5</td></tr>
-            <tr><td>Franklin</td><td>T</td><td>Wong</td><td>333445555</td><td>1955-12-08</td><td>638 Voss, Houston, TX</td><td>M</td><td>40000</td><td>888665555</td><td>5</td></tr>
-            <tr><td>Alicia</td><td>J</td><td>Zelaya</td><td>999887777</td><td>1968-01-19</td><td>3321 Castle, Spring, TX</td><td>F</td><td>25000</td><td>987654321</td><td>4</td></tr>
-            <tr><td>Jennifer</td><td>S</td><td>Wallace</td><td>987654321</td><td>1941-06-20</td><td>291 Berry, Bellaire, TX</td><td>F</td><td>43000</td><td>888665555</td><td>4</td></tr>
-            <tr><td>Ramesh</td><td>K</td><td>Narayan</td><td>666884444</td><td>1962-09-15</td><td>975 Fire Oak, Humble, TX</td><td>M</td><td>38000</td><td>333445555</td><td>5</td></tr>
-            <tr><td>Joyce</td><td>A</td><td>English</td><td>453453453</td><td>1972-07-31</td><td>5631 Rice, Houston, TX</td><td>F</td><td>25000</td><td>333445555</td><td>5</td></tr>
-            <tr><td>Ahmad</td><td>V</td><td>Jabbar</td><td>987987987</td><td>1969-03-29</td><td>980 Dallas, Houston, TX</td><td>M</td><td>25000</td><td>987654321</td><td>4</td></tr>
-            <tr><td>James</td><td>E</td><td>Borg</td><td>888665555</td><td>1937-11-10</td><td>450 Stone, Houston, TX</td><td>M</td><td>55000</td><td>NULL</td><td>1</td></tr>
-        </tbody>
-    </table>
-
-    <h2>DEPARTMENT Table</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Dname</th><th>Dnumber</th><th>Mgr_ssn</th><th>Mgr_start_date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Research</td><td>5</td><td>333445555</td><td>1988-05-22</td></tr>
-            <tr><td>Administration</td><td>4</td><td>987654321</td><td>1995-01-01</td></tr>
-            <tr><td>Headquarters</td><td>1</td><td>888665555</td><td>1981-06-19</td></tr>
-        </tbody>
-    </table>
-    </div>
-<!--    reference table-->
-    {% for task in tasks %}
-    <div class="task" id="task-{{ task.id }}">
-        <div class="task-header">{{ task.title }}</div>
-        <div class="task-description">{{ task.description }}</div>
-
-        <form method="post" action="{% url 'submit_answer' %}">
-            {% csrf_token %}
-            <textarea name="user_sql" rows="5" style="width:100%;" placeholder="Write your SQL here...">{{ task.user_sql|default_if_none:"" }}</textarea>
-            <input type="hidden" name="task_id" value="{{ task.id }}">
-            <button type="submit" class="submit-btn">✍️ Submit Answer</button>
-        </form>
-
-        <button onclick="toggleAnswer({{ task.id }})" class="reference-btn">💡Get Some Hints</button>
-<!--        <div class="sql-answer" style="display:none;" id="answer-{{ task.id }}">-->
-<!--            <strong>Reference SQL:</strong><br>{{ task.sql }}-->
-<!--            <div class="explanation"><strong>explanation：</strong>{{ task.explanation }}</div>-->
-        <!--        </div>-->
-        <div class="sql-answer" style="display:none;" id="answer-{{ task.id }}">
-            {% if task.id == 1 %}
-            <strong>Reference SQL:</strong><br>{{ task.sql }}
-            <div class="explanation"><strong>Explanation:</strong> {{ task.explanation }}</div>
-            {% elif task.id == 2 %}
-            <div class="explanation"><strong>Explanation:</strong> {{ task.explanation }}</div>
-            {% elif task.id == 3 %}
-            <div class="explanation"><strong>Note:</strong> You need to work on your own. 🚫</div>
-            {% else %}
-            <div class="explanation"><strong>Note:</strong> No hint available for this task.</div>
-            {% endif %}
+{% block content %}
+<div class="pc-container">
+  <div class="pc-content">
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">
+                <a href="/"> 📚 LLM Query Practice Report</a>
+              </h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">Home</li>
+            </ul>
+          </div>
         </div>
-        {% if task.feedback %}
-        <div class="message success">
-            <strong>score：</strong>{{ task.feedback.score }} / 100<br>
-            <strong>comment：</strong>{{ task.feedback.comment }}
-        </div>
-        {% endif %}
+      </div>
     </div>
-    {% endfor %}
 
+    <!-- 主内容区域 - 使用内联样式 -->
+    <div style="max-width: 900px; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); padding: 30px; position: relative;">
+      <form action="{% url 'clear_tasks_student' %}" method="post" style="position: absolute; top: 10px; right: 30px; z-index: 10;">
+          {% csrf_token %}
+          <button style="background-color: #3498db; color: white; padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s;">👋 EXIT</button>
+      </form>
 
-<!--    三次task都答完后有submit按钮-->
-    {% if tasks|length == 3 %}
-    {% if tasks.0.feedback and tasks.1.feedback and tasks.2.feedback %}
-    <form method="POST" action="{% url 'submit_final_score' %}">
-        {% csrf_token %}
-        <input type="hidden" name="keyword" value="{{ request.session.keyword }}">
-         <div class="center-btn">
-        <button type="submit" class="submit-final-btn">Submit Final Evaluation</button>
-         </div>
-    </form>
-    {% endif %}
-{% endif %}
-    <div class="back-button">
-        <a href="{% url 'llm_interact_student' %}"><button>Choose Another Topic</button></a>
+      <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #ddd; padding-bottom: 25px; background: linear-gradient(to bottom, #ffffff, #f9f9f9); border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+          <h1 style="font-size: 36px; font-weight: 700; color: #2c3e50; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05);">📝 SQL Practice Tasks 💡</h1>
+          <p style="font-size: 16px; color: #555; line-height: 1.6; margin: 6px 0;">You have a "Company" database. Click "📂 Check the schema" to view the table and complete tasks 1 to task 3.</p>
+          <p style="font-size: 16px; color: #555; line-height: 1.6; margin: 6px 0;"> Write your SQL queries for each task and get evaluated by the LLM.✅ </p>
+      </div>
+
+      <!-- reference table -->
+      <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+        <button id="toggle-schema-btn" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">📂 Check the schema</button>
+      </div>
+      <div id="reference-schema" style="margin-top: 20px; margin-bottom: 40px; display: none;">
+        <h2 style="color: #2c3e50;">EMPLOYEE Table</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 2px solid #999;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Fname</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Minit</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Lname</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Ssn</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Bdate</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Address</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Sex</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Salary</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Super_ssn</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Dno</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">John</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">B</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Smith</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">123456789</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1965-01-09</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">731 Fondren, Houston, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">M</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">30000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">333445555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Franklin</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">T</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Wong</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">333445555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1955-12-08</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">638 Voss, Houston, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">M</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">40000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">888665555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Alicia</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">J</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Zelaya</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">999887777</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1968-12-08</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">3321 Castle, Spring, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">F</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">25000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">987654321</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">4</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Jennifer</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">S</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Wallace</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">987654321</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1941-06-20</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">291 Berry, Bellaire, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">F</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">43000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">888665555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">4</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Ramesh</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">K</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Narayan</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">666884444</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1962-09-15</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">975 Fire Oak, Humble, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">M</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">38000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">333445555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Joyce</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">A</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">English</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">453453453</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1972-07-31</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5631 Rice, Houston, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">F</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">25000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">333445555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Ahmad</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">V</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Jabbar</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">987987987</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1969-03-29</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">980 Dallas, Houston, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">M</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">25000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">987654321</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">4</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">James</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">E</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Borg</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">888665555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1937-11-10</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">450 Stone, Houston, TX</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">M</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">55000</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">NULL</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1</td>
+
+            </tbody>
+        </table>
+
+        <h2 style="color: #2c3e50;">DEPARTMENT Table</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 2px solid #999;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Dname</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Dnumber</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Mgr_ssn</th>
+                    <th style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle; background-color: #f4f4f4; font-weight: bold;">Mgr_start_date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Research</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">5</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">333445555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1988-05-22</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Administration</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">4</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">987654321</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1995-01-01</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">Headquarters</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">888665555</td>
+                    <td style="border: 1px solid #999; padding: 8px 12px; text-align: center; vertical-align: middle;">1981-06-19</td>
+                </tr>
+
+            </tbody>
+        </table>
+      </div>
+
+      {% for task in tasks %}
+      <div style="margin-bottom: 40px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #f9f9f9;" id="task-{{ task.id }}">
+          <div style="background-color: #3498db; color: white; padding: 10px 15px; border-radius: 5px; margin-bottom: 15px;">{{ task.title }}</div>
+          <div style="margin-bottom: 20px; line-height: 1.6;">{{ task.description }}</div>
+
+          <form method="post" action="{% url 'submit_answer' %}">
+              {% csrf_token %}
+              <textarea name="user_sql" rows="5" style="width:100%;" placeholder="Write your SQL here...">{{ task.user_sql|default_if_none:"" }}</textarea>
+              <input type="hidden" name="task_id" value="{{ task.id }}">
+              <button type="submit" style="background-color: #3498db; color: white; padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; margin-bottom: 8px; width: 220px; transition: background-color 0.2s ease;">✍️ Submit Answer</button>
+          </form>
+
+          <button onclick="toggleAnswer({{ task.id }})" style="background-color: #5dade2; color: white; padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; margin-left: 0px; width: 220px; transition: background-color 0.2s ease;">💡Get Some Hints</button>
+
+          <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; margin-bottom: 20px; border-left: 4px solid #3498db; display:none;" id="answer-{{ task.id }}">
+              {% if task.id == 1 %}
+              <strong>Reference SQL:</strong><br>{{ task.sql }}
+              <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; line-height: 1.6;"><strong>Explanation:</strong> {{ task.explanation }}</div>
+              {% elif task.id == 2 %}
+              <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; line-height: 1.6;"><strong>Explanation:</strong> {{ task.explanation }}</div>
+              {% elif task.id == 3 %}
+              <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; line-height: 1.6;"><strong>Note:</strong> You need to work on your own. 🚫</div>
+              {% else %}
+              <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; line-height: 1.6;"><strong>Note:</strong> No hint available for this task.</div>
+              {% endif %}
+          </div>
+
+          {% if task.feedback %}
+          <div style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+              <strong>score：</strong>{{ task.feedback.score }} / 100<br>
+              <strong>comment：</strong>{{ task.feedback.comment }}
+          </div>
+          {% endif %}
+      </div>
+      {% endfor %}
+
+      <!-- 三次task都答完后有submit按钮 -->
+      {% if tasks|length == 3 %}
+      {% if tasks.0.feedback and tasks.1.feedback and tasks.2.feedback %}
+      <form method="POST" action="{% url 'submit_final_score' %}">
+          {% csrf_token %}
+          <input type="hidden" name="keyword" value="{{ request.session.keyword }}">
+           <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+          <button type="submit" style="background-color: #3498db; color: white; padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; margin-bottom: 8px; width: 220px; transition: background-color 0.2s ease;">Submit Final Evaluation</button>
+           </div>
+      </form>
+      {% endif %}
+      {% endif %}
+
+      <div style="display: block; width: 200px; margin: 30px auto 0; text-align: center;">
+          <a href="{% url 'llm_interact_student' %}"><button style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;">Choose Another Topic</button></a>
+      </div>
     </div>
-<!--     三次task都答完后有submit按钮-->
+  </div>
+</div>
+{% endblock content %}
 
+{% block extra_js %}
 <script>
     function toggleAnswer(id) {
         const block = document.getElementById("answer-" + id);
         block.style.display = block.style.display === "none" ? "block" : "none";
     }
 </script>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -141,5 +272,4 @@
         });
     });
 </script>
-</body>
-</html>
+{% endblock extra_js %}
