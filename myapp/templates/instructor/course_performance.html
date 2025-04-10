@@ -218,10 +218,10 @@
   new Chart(evalCtx, {
     type: 'line',
     data: {
-      labels: ['Eval 1', 'Eval 2', 'Eval 3'],
+      labels: data.evalLabels,
       datasets: [{
         label: 'Avg Score',
-        data: [82, 75, 89],
+        data: data.evalScores,
         borderColor: '#6610f2',
         backgroundColor: 'rgba(102, 16, 242, 0.1)',
         fill: true

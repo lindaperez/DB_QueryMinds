@@ -48,7 +48,6 @@ def home_view(request):
     
     return render(request, 'home.html', context)
 
-
 # Log In
 def login_view(request):
     if request.method == 'POST':
@@ -81,10 +80,10 @@ def update_profile(request):
             if user_form.is_valid() and instructor_form.is_valid():
                 user_form.save()
                 instructor_form.save()
-                messages.success(request, 'Your profile was updated successfully!')
+                messages.success(request, '✅ Your profile was updated successfully!')
                 return redirect('update_profile')
             else:
-                messages.error(request, 'Please correct the error below.')
+                messages.error(request, '❌ Please correct the error below.')
 
         elif type_role == 'student':
             student = request.user.student
@@ -92,10 +91,10 @@ def update_profile(request):
             if user_form.is_valid() and student_form.is_valid():
                 user_form.save()
                 student_form.save()
-                messages.success(request, 'Your profile was updated successfully!')
+                messages.success(request, '✅ Your profile was updated successfully!')
                 return redirect('update_profile')
             else:
-                messages.error(request, 'Please correct the error below.')
+                messages.error(request, '❌ Please correct the error below.')
 
     else:
         user_form = UserForm(instance=user)
@@ -135,7 +134,7 @@ def register(request):
       if user_type == 'instructor':
         Instructor.objects.create(user=user, v_specialty='', v_bio='', n_phone='')
       elif user_type == 'student':
-        student = Student.objects.create(user=user, n_gpa=0.00, d_starting_date=timezone.now(),d_join_date=timezone.now())
+        student = Student.objects.create(user=user, n_gpa=3.0, d_starting_date=timezone.now(),d_join_date=timezone.now())
         course = Course.objects.get(pk=6)  # Replace with your course ID
       
         all_chpters = LearningChapter.objects.filter(instructor=course.instructor)
@@ -147,7 +146,7 @@ def register(request):
                 course=course
             )
             if created:
-                print(f"StudentCourse created: {student_course}")
+                print(f"✅ StudentCourse created: {student_course}")
             else:
                 print(f"StudentCourse already exists: {student_course}")
             # Registering Student to the corresponding Course Learning Chapters
@@ -160,7 +159,6 @@ def register(request):
                 print(f"ChapterStudent created: {chapter_student}")
             else:
                 print(f"ChapterStudent already exists: {chapter_student}")
-                
                 
                 
       messages.success(request, "✅ Your account has been created successfully!")
@@ -215,7 +213,7 @@ def instructor_dashboard(request):
     try:
         instructor = Instructor.objects.get(user=user)
     except Instructor.DoesNotExist:
-        raise PermissionDenied("You must be an instructor to access this page.")
+        raise PermissionDenied(" ❌ You must be an instructor to access this page.")
 
     # Forms
     chapter_form = ChapterForm(request.POST or None)
@@ -334,7 +332,7 @@ def instructor_dashboard(request):
             if edit_chapter_form.is_valid():
                 edit_chapter_form.save()
                 messages.success(request, "✏️ Chapter updated successfully.")
-                return redirect('chapter_dashboard')
+                
             else:
                 chapter.edit_form = edit_chapter_form  
                 print("❌ Chapter form errors:")
@@ -350,7 +348,8 @@ def instructor_dashboard(request):
                 for field in edit_chapter_form.fields:
                     value = edit_chapter_form.data.get(field, '[not submitted]')
                     print(f"  {field}: {value}")
-
+                    
+            return redirect(f"{request.path}#chapter-edit-{chapter.id_learningchapter}")
         # Handle Exercise Edit
         # Create one edit form per exercise
         if request.method == 'POST' and 'edit_exercise' in request.POST:
@@ -443,7 +442,7 @@ def chapter_detail(request, chapter_id):
     exercises = Exercise.objects.filter(chapterexercise__chapter=chapter)
     exercise_forms = []
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'chapter_detail' in request.POST:
         form = AnswerForm(request.POST)
         if form.is_valid():
             exercise_id = form.cleaned_data['exercise_id']
@@ -518,7 +517,7 @@ def student_learning_view(request):
             exercise=exercise,
             defaults={"b_iscorrect": False}
         )
-        print(f"Answer object: {answer_obj}, Created: {answer_created}")
+       # print(f"Answer object: {answer_obj}, Created: {answer_created}")
         
         # Clear old options if any
         AnswerMultipleOption.objects.filter(answer=answer_obj).delete()
@@ -531,9 +530,9 @@ def student_learning_view(request):
                 .values_list("id_option", flat=True)
             )
 
-            print(f"Selected: {selected_ids}, Correct: {correct_ids}")
+           # print(f"Selected: {selected_ids}, Correct: {correct_ids}")
             answer_obj.b_iscorrect = 1 if (selected_ids == correct_ids) else 0
-            print(f"Is Correct: {answer_obj.b_iscorrect}")
+            #print(f"Is Correct: {answer_obj.b_iscorrect}")
             # Clear and save new option links
             AnswerMultipleOption.objects.filter(answer=answer_obj).delete()
             
@@ -544,16 +543,16 @@ def student_learning_view(request):
 
             try:
                 answer_obj.save()
-                print(f" ✅ Answer object saved: {answer_obj} create {answer_created}")
+                #print(f" ✅ Answer object saved: {answer_obj} create {answer_created}")
                 # Create or update the AnswerMultipleOption
 
-                print("✅ DB Check:", Answer.objects.filter(id=answer_obj.id).exists())
+                #print("✅ DB Check:", Answer.objects.filter(id=answer_obj.id).exists())
                 # Explicit flush to DB
                 from django.db import connection
                 connection.commit()
 
                 exists = Answer.objects.filter(pk=answer_obj.pk).exists()
-                print("✅ Commit forced. Answer exists:", exists)
+                #print("✅ Commit forced. Answer exists:", exists)
             except Exception as e:
                 print("🔥 Save failed:", e)
             
@@ -597,16 +596,14 @@ def student_learning_view(request):
 
             try:
                 answer_obj.save()
-                print(f" ANSWER OBJECT {answer_obj} create {answer_created}")
+                print(f" ANSWER  {answer_obj} create {answer_created}")
                 print("✅ Answer saved successfully.")
             
             except Exception as e:
                 print("🔥 Save failed:", e)
             print(f"Saved Answer: {answer_obj.pk}, {answer_obj.v_answer}Score: {answer_obj.n_score}, Is Correct: {answer_obj.b_iscorrect}")
 
-        messages.success(request, "✅ Your answer has been submitted.")
-
-    
+            
         # Finish the chapter in case student answer the last question 
         # calculate # exerc per chapter
         # All exercises in this chapter
@@ -623,21 +620,46 @@ def student_learning_view(request):
         answered_count = len(answered_exercise_ids)
 
         if total_exercises == answered_count:
-            # set chapter student finish date 
-            chapter_student = ChapterStudent.objects.filter(student=student, learning_chapter=chapter).update(d_finish=now()) 
-            print(f"ChapterStudent object: {chapter_student}")
-      
+
             try:
-                chapter_student.save()
+                 # set chapter student finish date 
+                chapter_student = ChapterStudent.objects.filter(student=student, learning_chapter=chapter).update(d_finish=now()) 
             except Exception as e:
                 print("🔥 Save failed:", e)
-                print(f"ChapterStudent object saved: {chapter_student}")
-            print(f"ChapterStudent object saved: {chapter_student}")
             print("✅ ChapterStudent saved successfully.")
-    
-        return redirect(f"{request.path}?chapter_id={chapter_id}&exercise_id={exercise_id}")
+
+        # Update the Chapter scores 
+        chapter_student_scores = ChapterStudent.objects.get(
+            student=student,
+            learning_chapter=chapter
+        )
+        if chapter_student_scores.n_score ==0:
+            chapter_student_scores.n_score = answer_obj.n_score
+        else:
+            chapter_student_scores.n_score = (chapter_student_scores.n_score + answer_obj.n_score)//2
+        print(f" 🎯 ANSWERED COUNT {answered_count}")
+        print(f" 🎯  {chapter_student_scores.n_score}")
+        print(f" ✅ ChapterStudent object: {chapter_student_scores} {chapter_student_scores.student} {chapter_student_scores.n_score}")
+        try: 
+            chapter_student_scores.save()    
+            print("✅ ChapterStudent saved successfully.")
+        except Exception as e:
+            print("🔥 Save failed:", e)
+            print("🎯 Student:", chapter_student_scores.student)
+            print("🎯 Chapter:", chapter_student_scores.learning_chapter)
+            print("🎯 n_score (before):", chapter_student_scores.n_score)
+            print("🎯 d_finish:", chapter_student_scores.d_finish)
+            print(f"total_exercises { total_exercises}")
+
+                   
+        messages.success(request, "✅ Your answer has been submitted.")
+        return redirect(f"{request.path}?chapter_id={chapter.id_learningchapter}#active_exercise-{exercise_id}")
+
+
 
     active_chapter_id = request.GET.get("chapter_id")
+
+   
     # Get all chapters and sort them
     all_chapters_qs = LearningChapter.objects.order_by("id_learningchapter")
     all_chapters = list(all_chapters_qs)  # Convert to list for index-based operations
@@ -665,12 +687,18 @@ def student_learning_view(request):
 
         if chapter.available:
             unlocked_chapter_ids.add(chapter.id_learningchapter)
-        #else:
-            #messages.success(request, "🏁 You've reached the end of your learning path!")
+
 
     # Ensure at least the first chapter is unlocked
     if not unlocked_chapter_ids and all_chapters:
         unlocked_chapter_ids.add(all_chapters[0].id_learningchapter)
+        
+    # ✅ REDIRECT before loading exercises
+    if not active_chapter_id:
+        for chapter in all_chapters:
+            if chapter.id_learningchapter in unlocked_chapter_ids and chapter.id_learningchapter not in completed_chapter_ids:
+                return redirect(f"{request.path}?chapter_id={chapter.id_learningchapter}")
+
 
     # Collect structured chapter data for the template
     chapter_data = []
@@ -703,7 +731,7 @@ def student_learning_view(request):
                 if answer:
                     # If it's a text input (single-option text question)
                     if len(options_all) == 1:
-                        print(f"✅ Answer tex")
+                        #print(f"✅ Answer tex")
                         answer_text = answer.v_answer
                         is_correct = answer.b_iscorrect
                     else:
@@ -753,13 +781,12 @@ def student_learning_view(request):
         "active_chapter_id" : request.GET.get("chapter_id")
     })
     
-
-
 # Mark chapter read 
 @login_required
 def mark_chapter_read(request):
     if request.method == 'POST':
         chapter_id = request.POST.get('chapter_id')
+
         user = request.user
         try:
             student = Student.objects.get(user=user)
@@ -769,23 +796,29 @@ def mark_chapter_read(request):
 
         # Use correct field names from your model
         chapter_student, created = ChapterStudent.objects.get_or_create(
-            id_student=student,
-            id_learningchapter=chapter,
+            student=student,
+            learning_chapter=chapter,
             defaults={'d_begin': now().date()}
         )
 
         if not chapter_student.d_finish:
             chapter_student.d_finish = now().date()
             chapter_student.save()
-
-        return JsonResponse({'success': True})
-
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+    
+        # update chapter scores by the number of exercises
+        all_exercises = Exercise.objects.filter(
+        chapterexercise__id_learningchapter__in=chapter).distinct()
+        total_exercises = all_exercises.count()
+        print(f"Total exercises in chapter {chapter.id_learningchapter}: {total_exercises}")
+        chapter_student.n_score = ((chapter_student.n_score)// total_exercises)*100
+        #chapter_student.save()    
+        
+        return JsonResponse({'success': True, 'message': 'Chapter marked as read.'})
+    return render(request, 'home.html')
 
 
 # Instructor Performance Dashboard 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
+
 from django.db.models import Avg, Count
 from decimal import Decimal
 from .models import (
@@ -795,7 +828,7 @@ from .models import (
 )
 import json
 from decimal import Decimal
-from django.shortcuts import render, get_object_or_404
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 from .models import (
@@ -820,7 +853,6 @@ def course_performance(request):
     total_exercises = all_exercises.count()
     
     for stu in students:
-        first_student = stu
         chapter_score = Decimal(0)
         chapter_stu_qs = ChapterStudent.objects.filter(student=stu, d_finish__isnull=False)
         # Calculating the student progress

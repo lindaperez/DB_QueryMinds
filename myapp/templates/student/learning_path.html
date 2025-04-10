@@ -39,6 +39,7 @@
          {% endfor %}
        </div>
        {% endif %}
+       
     <!-- Chapter Menu -->
     <div class="card p-3 mb-4">
       <h5>🔖 Chapters in this path:</h5>
@@ -68,6 +69,8 @@
 
         {% if data.exercises %}
           {% for ex in data.exercises %}
+     
+
           <div class="card exercise-card {% if forloop.first %}active{% endif %}" 
                id="exercise-{{ data.chapter.id_learningchapter }}-{{ forloop.counter }}"
                data-exercise="{{ forloop.counter }}">
@@ -75,16 +78,16 @@
                 ✅ Answer submitted!
               </div>
               
-            <div class="card-body">
+            <div class="card-body" id="active_exercise-{{ ex.exercise.pk }}">
               <p><strong>Exercise {{ forloop.counter }}.</strong></p><p> {{ ex.exercise.description }}</p>
 
-              <form method="post" action="{% url 'student_learning_view' %}">
+              <form method="post" action="{% url 'student_learning_view' %}" >
                 {% csrf_token %}
                 <input type="hidden" name="exercise_id" value="{{ ex.exercise.pk }}">
                 <input type="hidden" name="chapter_id" value="{{ data.chapter.id_learningchapter }}">
                 {% if ex.options|length > 1 %}
                   {% for opt in ex.options %}
- 
+                    
                     <div class="form-check">
                       <input type="checkbox"
                               class="form-check-input"
@@ -220,4 +223,9 @@ function markChapterRead(chapterId, chapterIndex) {
   border: 2px solid #0d6efd;
   background-color: #f0f8ff;
 }
-  </style
+  </style>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
