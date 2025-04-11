@@ -161,11 +161,20 @@
               <div class="dropdown-header d-flex align-items-center justify-content-between bg-primary">
                 <div class="d-flex my-2">
                   <div class="flex-shrink-0">
-                    <img src="{% static "assets/images/user/avatar-2.jpg" %}" alt="user-image" class="user-avtar wid-35" />
+                    {% if user.is_authenticated and user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="user-image" class="user-avtar wid-35" />
+                    {% else %}
+                    <img src="{% static 'assets/images/user/avatar-2.jpg' %}" alt="default-avatar" class="user-avtar wid-35" />
+                    {% endif %}
                   </div>
                   <div class="flex-grow-1 ms-3">
-                    <h6 class="text-white mb-1">Carson Darrin 🖖</h6>
-                    <span class="text-white text-opacity-75">carson.darrin@company.io</span>
+                    {% if user.is_authenticated %}
+                      <h6 class="text-white mb-1">{{ user.get_full_name }}</h6>
+                      <span class="text-white text-opacity-75">{{ user.email }}</span>
+                    {% else %}
+                      <h6 class="text-white mb-1">Guest</h6>
+                      <span class="text-white text-opacity-75">guest@example.com</span>
+                    {% endif %}
                   </div>
                 </div>
               </div>
