@@ -268,3 +268,14 @@ class MessageForm(forms.ModelForm):
             'subject': 'Subject',
             'content': 'Message',
         }
+        
+from django import forms
+from .models import DifficultyLevel
+
+class SQLQuestionGeneratorForm(forms.Form):
+    phrase = forms.CharField(label="Required Phrase", max_length=100)
+    difficulty = forms.ModelChoiceField(
+        queryset=DifficultyLevel.objects.all(),
+        to_field_name='id_difficultylevel',
+        label="Difficulty Level"
+    )

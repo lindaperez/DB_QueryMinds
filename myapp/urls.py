@@ -53,14 +53,15 @@ urlpatterns = [
   
     
     # Manage Learning Path for Instructor and Student
-    
      path('dashboard/', views.instructor_dashboard, name='chapter_dashboard'),
      path('instructor/course_performance/', views.course_performance, name='course_performance'),
-     
      path('instructor/student/<int:student_id>/', views.instructor_student_detail_view, name='instructor_student_detail_view'),
+     # OPENAI
+     path("instructor/generate-sql-question/", views.generate_sql_question_view, name="generate_sql_question"),
+
+    
     #  Student Learning
     path("learning-path/", views.student_learning_view, name="student_learning_view"),
-
     path('student/mark_chapter_read/', views.mark_chapter_read, name='mark_chapter_read'),
 
 

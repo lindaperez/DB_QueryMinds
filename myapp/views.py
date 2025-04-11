@@ -204,6 +204,34 @@ def studenthub(request):
 # End Testing for Chapter Views Feiyan
 
 # Instructor 
+
+#OpenAI
+from django.shortcuts import render
+from .forms import SQLQuestionGeneratorForm
+from .models import DifficultyLevel
+from .utils import generate_sql_question_answer
+
+def generate_sql_question_view(request):
+    question = answer = None
+    if request.method == "POST":
+        form = SQLQuestionGeneratorForm(request.POST)
+        
+        if form.is_valid():
+            phrase = form.cleaned_data['phrase']
+            difficulty_obj = form.cleaned_data['difficulty']
+            difficulty_title = difficulty_obj.v_title.lower()
+            question, answer = generate_sql_question_answer(phrase, difficulty_title)
+    else:
+        form = SQLQuestionGeneratorForm()
+
+    return render(request, "instructor/chapter_dasboard.html", {
+        "form": form,
+        "question": question,
+        "answer": answer
+    })
+
+from .utils import generate_sql_with_openai
+
 # Instructor Learning Chapter Dashboard
 @login_required
 def instructor_dashboard(request):
@@ -220,6 +248,40 @@ def instructor_dashboard(request):
     exercise_form = ExerciseForm()
     evaluation_form = EvaluationForm()
  
+    #OpenAI
+    question = answer = question_multiple = multiple_options= correct_option=None
+    
+    if request.method == "POST" and "generate_sql" in request.POST:
+        form = SQLQuestionGeneratorForm(request.POST)
+        if form.is_valid():
+            phrase = form.cleaned_data['phrase']
+            phrase_used = phrase
+            difficulty_obj = form.cleaned_data['difficulty']
+            difficulty_title = difficulty_obj.v_title.lower()
+
+            answer_mode = request.POST.get("answer_mode", "single")
+
+            if answer_mode == "multiple":
+                result = generate_sql_with_openai(phrase, difficulty_title, mode="multiple")
+
+                # Try to parse question and options
+                import re
+
+                question_match = re.search(r"Question:\s*(.*)", result)
+                options = re.findall(r"([A-D])\)\s*(.*)", result)
+                correct_match = re.search(r"Correct Answer:\s*([A-D])", result)
+
+                question_multiple = question_match.group(1).strip() if question_match else "❓ Could not find question."
+                multiple_options = options  # List of (letter, SQL)
+                correct_option = correct_match.group(1) if correct_match else "?"
+
+            else:
+                result = generate_sql_with_openai(phrase, difficulty_title, mode="single")
+                parts = result.split("Answer:")
+                question = parts[0].strip()
+                answer = parts[1].strip() if len(parts) > 1 else "No answer returned"
+    else:
+        form = SQLQuestionGeneratorForm()
     # Handle New Chapter
     if request.method == 'POST' and 'create_chapter' in request.POST:
         if chapter_form.is_valid():
@@ -411,6 +473,12 @@ def instructor_dashboard(request):
     'chapter_form': ChapterForm(),             # For creation
     'exercise_form': exercise_form,
     'evaluation_form': evaluation_form,
+    'form': form,
+    'question': question,
+    'answer': answer,
+    'question_multiple':question_multiple,
+    'multiple_options':multiple_options,
+    'correct_option':correct_option
 })
 
 
@@ -844,6 +912,8 @@ def course_performance(request):
     course = get_object_or_404(Course, pk=6)
     print(f"COURSE {course}")
     chapters = LearningChapter.objects.filter(instructor=instructor)
+    
+
     print(f"CHAPTERS {chapters}")
     student_ids = StudentCourse.objects.filter(course=course).values_list('student', flat=True).distinct()
     students = Student.objects.filter(pk__in=student_ids)
@@ -911,7 +981,7 @@ def course_performance(request):
 
     # Completion Rate
     completed_chapter_count = chapter_scores.count()
-    total_chapter_count = chapters.count() * total_students
+    total_chapter_count = total_chapters * total_students
     completion_rate = round((completed_chapter_count / total_chapter_count) * 100, 2) if total_chapter_count else 0
 
     # Chapter avg scores
@@ -978,6 +1048,7 @@ def course_performance(request):
         'completion_rate': completion_rate,
         'students': students,
         'dashboard_json': dashboard_data,
+        'total_weight_chapters':sum(chapter.f_weight for chapter in chapters)
     }
 
     return render(request, 'instructor/course_performance.html', context)
@@ -1004,6 +1075,9 @@ def instructor_student_detail_view(request):
     }
 
     return render(request, 'instructor/student_performance.html', context)
+
+
+
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404

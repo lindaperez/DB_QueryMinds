@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
-
+{% load widget_tweaks %}
 {% block title %}Performance Dashboard{% endblock %}
 
 {% block content %}
@@ -117,18 +117,17 @@
         <thead>
           <tr>
             <th>Student</th>
-            <th>GPA</th>
-            <th>Chapter Score</th>
+            <th>Email</th>
+            <th>Chapter Score over Total </th>
             <th>Progress</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
           {% for student in students %}
           <tr>
             <td>{{ student.user.first_name}} {{ student.user.last_name}}</td>
-            <td>{{ student.n_gpa }}</td>
-            <td>{{ student.chapter_score }}%</td>
+            <td>{{ student.user.email }}</td>
+            <td>{{ student.chapter_score }}% </td>
 
             <td>
               <div class="mb-3">

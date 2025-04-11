@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
-
+{% load widget_tweaks %}
 {% block title %} Manage Learning Chapters {% endblock title %}
 
 {% block content %}
@@ -46,6 +46,88 @@
     <div class="text-right mb-3">
       <button class="btn btn-outline-secondary" onclick="collapseAllChapters()">Collapse All Chapters</button>
     </div>
+
+    <div class="row">
+      <div class="col-md-10 offset-md-1" id="SQL-question-generator">
+          <div class="card shadow-sm border mt-4">
+              <div class="card-header">
+                  <h5 class="mb-0">SQL Instructor Exercise Generator</h5>
+                  <small class="text-muted">Generate SQL questions containing a specific phrase and difficulty level.</small>
+              </div>
+              <div class="card-body">
+                  
+                <form method="post" action="#SQL-question-generator">
+                  {% csrf_token %}
+              
+                  <!-- Phrase -->
+                  <div class="form-group">
+                      <label for="{{ form.phrase.id_for_label }}">Required Phrase</label>
+                      {% render_field form.phrase class="form-control" placeholder="e.g., PARTITION BY" %}
+                  </div>
+              
+                  <!-- Difficulty -->
+                  <div class="form-group mt-3">
+                      <label for="{{ form.difficulty.id_for_label }}">Difficulty Level</label>
+                      {% render_field form.difficulty class="form-control" %}
+                  </div>
+              
+                  <!-- Option: Single or Multiple -->
+                  <div class="form-group mt-3">
+                      <label for="multiple_option">Answer Mode</label>
+                      <select name="answer_mode" id="multiple_option" class="form-control">
+                          <option value="single">Single Answer</option>
+                          <option value="multiple">Multiple Options</option>
+                      </select>
+                  </div>
+              
+                  <button type="submit" name="generate_sql" value="1" class="btn btn-primary mt-3">
+                      Generate Question
+                  </button>
+              </form>
+              
+
+              </div>
+              {% if question_multiple %}
+              <div class="card mt-4 shadow border">
+                  <div class="card-header bg-light">
+                      <h6 class="mb-0">Multiple Choice SQL Question</h6>
+                  </div>
+                  <div class="card-body">
+                      <p><strong>Phrase:</strong> <code>{{ phrase_used }}</code></p>
+                      <p><strong>Question:</strong> {{ question_multiple }}</p>
+                      <ol type="A">
+                          {% for letter, option in multiple_options %}
+                              <li>
+                                  <pre><code>{{ option }}</code></pre>
+                                  {% if letter == correct_option %}
+                                      <span class="badge bg-success text-white">✔ Correct</span>
+                                  {% endif %}
+                              </li>
+                          {% endfor %}
+                      </ol>
+                  </div>
+              </div>
+              {% endif %}
+          </div>
+
+          {% if question %}
+          <div class="card shadow-sm border mt-4">
+              <div class="card-header bg-light">
+                  <h5 class="mb-0 text-primary">Generated SQL Question</h5>
+              </div>
+              <div class="card-body">
+                  <p class="mb-2"><strong>Question:</strong></p>
+                  <p class="text-dark">{{ question }}</p>
+          
+                  <p class="mb-2"><strong>Answer:</strong></p>
+                  <pre class="bg-light p-3 rounded"><code>{{ answer }}</code></pre>
+              </div>
+          </div>
+          {% endif %}
+          
+      </div>
+  </div>
+
 
     <!-- Create Chapter Global Form -->
     <div class="card p-3 mb-4 ">
