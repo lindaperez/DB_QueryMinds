@@ -13,10 +13,12 @@ import json
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 
-#import os
-#client = OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
+from django.conf import settings
 
-client = OpenAI(api_key="OPENAI_API_KEY_REMOVED")  # Add OpenAI API key
+# Create the client using your Django setting
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
 MODEL_NAME = "gpt-4"
 
 logger = logging.getLogger(__name__)

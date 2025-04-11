@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
-{% load widget_tweaks %}
+
 {% block title %}Performance Dashboard{% endblock %}
 
 {% block content %}
@@ -45,8 +45,8 @@
       <div class="col-md-2">
         <div class="card text-white bg-info">
           <div class="card-body">
-            <h6>Avg Eval Score</h6>
-            <h3>{{avg_eval_score}}%</h3>
+            <h6>Total Chapters Weight</h6>
+            <h3>{{total_weight_chapters}}%</h3>
           </div>
         </div>
       </div>
@@ -118,7 +118,7 @@
           <tr>
             <th>Student</th>
             <th>Email</th>
-            <th>Chapter Score over Total </th>
+            <th>Chapter Score </th>
             <th>Progress</th>
           </tr>
         </thead>
