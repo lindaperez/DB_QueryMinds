@@ -37,15 +37,18 @@ def home_view(request):
     user = request.user
     if not user.is_authenticated:
         return redirect('login')
-    
-    profile =  user.userprofile
-    course = Course.objects.get(pk=6) 
+
+    # A successful login redirects here, so this page must never 500.
+    # Users may not have a profile yet (e.g. superusers) and the demo course
+    # (pk=6) may not exist in every environment, so degrade gracefully.
+    profile = getattr(user, 'userprofile', None)
+    course = Course.objects.filter(pk=6).first()
     context = {
         'user': user,
         'profile': profile,
         'course': course,
     }
-    
+
     return render(request, 'home.html', context)
 
 # Log In
@@ -230,7 +233,9 @@ def generate_sql_question_view(request):
         "answer": answer
     })
 
-from .utils import generate_sql_with_openai
+from .utils import OpenAIGenerationError, generate_sql_with_openai
+from .utils import parse_openai_mcq_output
+import re
 
 # Instructor Learning Chapter Dashboard
 @login_required
@@ -250,6 +255,7 @@ def instructor_dashboard(request):
  
     #OpenAI
     question = answer = question_multiple = multiple_options= correct_option=None
+    phrase_used = None
     
     if request.method == "POST" and "generate_sql" in request.POST:
         form = SQLQuestionGeneratorForm(request.POST)
@@ -261,25 +267,38 @@ def instructor_dashboard(request):
 
             answer_mode = request.POST.get("answer_mode", "single")
 
-            if answer_mode == "multiple":
-                result = generate_sql_with_openai(phrase, difficulty_title, mode="multiple")
+            try:
+                if answer_mode == "multiple":
+                    result = generate_sql_with_openai(phrase, difficulty_title, mode="multiple")
 
-                # Try to parse question and options
-                import re
+                    # Try to parse question and options
 
-                question_match = re.search(r"Question:\s*(.*)", result)
-                options = re.findall(r"([A-D])\)\s*(.*)", result)
-                correct_match = re.search(r"Correct Answer:\s*([A-D])", result)
+                    question_match = re.search(r"Question:\s*(.*)", result)
+                    options = re.findall(r"([A-D])\)\s*(.*)", result)
+                    correct_match = re.search(r"Correct Answer:\s*([A-D])", result)
 
-                question_multiple = question_match.group(1).strip() if question_match else "❓ Could not find question."
-                multiple_options = options  # List of (letter, SQL)
-                correct_option = correct_match.group(1) if correct_match else "?"
+                    question_multiple = question_match.group(1).strip() if question_match else "Could not find question."
+                    multiple_options = options  # List of (letter, SQL)
+                    correct_option = correct_match.group(1) if correct_match else "?"
 
-            else:
-                result = generate_sql_with_openai(phrase, difficulty_title, mode="single")
-                parts = result.split("Answer:")
-                question = parts[0].strip()
-                answer = parts[1].strip() if len(parts) > 1 else "No answer returned"
+                else:
+                    raw_result = generate_sql_with_openai(phrase, difficulty_title, mode="single")
+                    question, multiple_options, correct_option = parse_openai_mcq_output(raw_result)
+                    # Split the main text and the answer
+                    parts = raw_result.split("Answer:")
+                    question_block = parts[0].strip()
+                    answer = parts[1].strip() if len(parts) > 1 else "?"
+
+                    # Extract individual parts
+                    question_match = re.search(r"Question:\s*(.*?)(?=A\))", question_block, re.DOTALL)
+                    question_text = question_match.group(1).strip() if question_match else "Could not parse question"
+
+                    # Extract options
+                    options = re.findall(r"([A-D])\)\s*(.*?)(?=([A-D]\)|$))", question_block, re.DOTALL)
+                    options_list = [(opt[0], opt[1].strip().replace("\n", " ")) for opt in options]
+            except OpenAIGenerationError as exc:
+                messages.warning(request, str(exc))
+
     else:
         form = SQLQuestionGeneratorForm()
     # Handle New Chapter
@@ -469,16 +488,17 @@ def instructor_dashboard(request):
                 ex.option_formset = MultipleOptionFormSet(instance=ex)
                 
     return render(request, 'instructor/chapter_dashboard.html', {
-    'chapters': chapters,
-    'chapter_form': ChapterForm(),             # For creation
-    'exercise_form': exercise_form,
-    'evaluation_form': evaluation_form,
-    'form': form,
-    'question': question,
-    'answer': answer,
-    'question_multiple':question_multiple,
-    'multiple_options':multiple_options,
-    'correct_option':correct_option
+        'chapters': chapters,
+        'chapter_form': ChapterForm(),
+        'exercise_form': exercise_form,
+        'evaluation_form': evaluation_form,
+        'form': form,
+        'question': question,
+        'answer': answer,
+        'question_multiple': question_multiple,
+        'multiple_options': multiple_options,
+        'correct_option': correct_option,
+        'phrase_used': phrase_used,
 })
 
 

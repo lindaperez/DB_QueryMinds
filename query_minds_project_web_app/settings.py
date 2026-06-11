@@ -87,20 +87,26 @@ WSGI_APPLICATION = 'query_minds_project_web_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+#cloud_sql_instances: queryminds:us-west2:neu-db-project
+
+
 DATABASES = {
        'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'neu_db_project',
-        'USER': 'neu-db-user',
-        'PASSWORD': 'PhT<\[*673._c7V+',
-        'HOST': '34.169.163.169',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME', 'neu_db_project'),
+        'USER': os.getenv('DB_USER', 'neu-db-user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '3307'),
+        'CONN_MAX_AGE': 0,
         'OPTIONS': {
             'init_command': "SET NAMES 'utf8mb4'",
+            'connect_timeout': 30,
+            'read_timeout': 120,
+            'write_timeout': 120,
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -146,6 +152,33 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ← Used by collectstatic
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
+# Email — required for the "Forgot password?" reset flow to deliver its email.
+# Without this the default SMTP backend tries localhost:25 and the reset request
+# raises in production. The console backend prints the email (incl. the reset
+# link) to the server log, which is fine for dev; swap to SMTP/a provider in prod.
+#
+# To make password recovery actually deliver mail, set these in .env (see the
+# block at the bottom of this comment) and the backend flips from console to a
+# real SMTP server. All values come from the environment so no secret is
+# committed to the repo:
+#
+#   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+#   EMAIL_HOST=smtp.gmail.com         # or smtp.sendgrid.net, email-smtp.<region>.amazonaws.com, ...
+#   EMAIL_PORT=587
+#   EMAIL_USE_TLS=True
+#   EMAIL_HOST_USER=<smtp username>
+#   EMAIL_HOST_PASSWORD=<smtp password / app password / API key>
+EMAIL_BACKEND = os.getenv(
+    'EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend'
+)
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() in ('1', 'true', 'yes')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@queryminds.local')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -156,4 +189,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if os.getenv("GAE_ENV", "").startswith("standard"):
     STATIC_ROOT = "staticfiles"
-

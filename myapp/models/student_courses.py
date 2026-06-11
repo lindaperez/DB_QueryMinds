@@ -2,7 +2,7 @@ from django.db import models
 from myapp.models import Student, Course  # Import the Student and Course models
 
 class StudentCourse(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.RESTRICT, db_column='id_student')
+    student = models.ForeignKey(Student, on_delete=models.RESTRICT, db_column='id_student', primary_key=True)
     course = models.ForeignKey(Course, on_delete=models.RESTRICT, db_column='id_course')
     class Meta:
         managed = False

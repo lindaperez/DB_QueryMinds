@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
+from pathlib import Path
 from dotenv import load_dotenv
+
+# Load the app-level .env (DB_*, OPENAI_API_KEY) found by walking up from cwd,
+# then layer in the project-root .env that lives OUTSIDE the git repo. The root
+# file is the home for real secrets (e.g. EMAIL_HOST_PASSWORD) since it can't be
+# committed. override=False keeps app-level values authoritative on any overlap.
 load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / '.env', override=False)
 
 import sys
 

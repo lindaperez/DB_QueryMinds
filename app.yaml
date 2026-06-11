@@ -16,4 +16,5 @@ handlers:
   script: auto
 
 beta_settings:
-    cloud_sql_instances: queryminds:REGION:neu-db-project
+  cloud_sql_instances: queryminds:us-west2:neu-db-project
+

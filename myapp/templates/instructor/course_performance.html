@@ -29,7 +29,7 @@
         <div class="card text-white bg-light">
           <div class="card-body">
             <h6>Average Chapter Score</h6>
-            <h3>{{ avg_chapter_score }}%</h3>
+            <h3>{{ avg_chapter_score|floatformat:0 }}%</h3>
           </div>
         </div>
       </div>
@@ -38,15 +38,15 @@
         <div class="card text-white bg-warning">
           <div class="card-body">
             <h6>Completion Rate</h6>
-            <h3>{{ completion_rate }}%</h3>
+            <h3>{{ completion_rate|floatformat:0 }}%</h3>
           </div>
         </div>
       </div>
       <div class="col-md-2">
         <div class="card text-white bg-info">
           <div class="card-body">
-            <h6>Total Chapters Weight</h6>
-            <h3>{{total_weight_chapters}}%</h3>
+            <h6>Total Chapter Weight</h6>
+            <h3>{{ total_weight_chapters|floatformat:0 }}%</h3>
           </div>
         </div>
       </div>

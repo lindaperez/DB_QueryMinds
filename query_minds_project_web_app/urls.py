@@ -23,7 +23,12 @@ from myapp.forms import CustomLoginForm  # Import CustomLoginForm
 urlpatterns = [
     path('', include('myapp.urls')),  # Include your app’s URLs for the root path
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),  # Add this line
+    # NOTE: django.contrib.auth.urls is intentionally NOT included here. It
+    # registers the same URL names (password_reset, password_change, ...) that
+    # myapp.urls already defines for our custom hyphenated routes. Because it
+    # was included after myapp.urls, reverse('password_reset') resolved to
+    # Django's built-in route instead of ours (defect #4). All those names are
+    # provided by myapp.urls, so dropping this include resolves the collision.
     path('accounts/login/', auth_views.LoginView.as_view(template_name='accounts/login.html', authentication_form=CustomLoginForm), name='login'),
 
 ]

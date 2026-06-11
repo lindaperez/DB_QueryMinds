@@ -1,8 +1,25 @@
-from openai import OpenAI
+from openai import AuthenticationError, OpenAI, OpenAIError, RateLimitError
 from django.conf import settings
 
-# Create the client using your Django setting
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+# Build the client lazily. Instantiating it at import time crashes the whole
+# URLconf (and therefore login) whenever OPENAI_API_KEY is unset, because
+# views.py imports this module at module load.
+_client = None
+
+
+class OpenAIGenerationError(Exception):
+    """User-safe error for SQL question generation failures."""
+
+
+def get_client():
+    global _client
+    if _client is None:
+        if not settings.OPENAI_API_KEY:
+            raise OpenAIGenerationError(
+                "OpenAI API key is not configured. Add OPENAI_API_KEY to .env and restart the server."
+            )
+        _client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    return _client
 
 def generate_sql_question_answer(phrase: str, difficulty: str):
     phrase = phrase.lower()
@@ -88,14 +105,51 @@ def generate_sql_with_openai(phrase, difficulty, mode="multiple"):
         f"A) ...\nB) ...\nC) ...\nD) ...\nCorrect Answer: B"
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a helpful SQL instructor."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=700
-    )
+    try:
+        response = get_client().chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful SQL instructor."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=700
+        )
+    except RateLimitError as exc:
+        body = exc.body if isinstance(exc.body, dict) else {}
+        error = body.get("error", {}) if isinstance(body.get("error"), dict) else {}
+        error_code = body.get("code") or error.get("code")
+        if error_code == "insufficient_quota":
+            raise OpenAIGenerationError(
+                "OpenAI quota is unavailable for the configured API key. Check the key's project billing/quota, then restart the server."
+            ) from exc
+        raise OpenAIGenerationError(
+            "OpenAI rate limit was reached. Please wait and try again."
+        ) from exc
+    except AuthenticationError as exc:
+        raise OpenAIGenerationError(
+            "OpenAI rejected the configured API key. Check OPENAI_API_KEY in .env, then restart the server."
+        ) from exc
+    except OpenAIError as exc:
+        raise OpenAIGenerationError(
+            "OpenAI could not generate a SQL question right now. Check the API key and service configuration."
+        ) from exc
 
     return response.choices[0].message.content.strip()
+
+import re
+def parse_openai_mcq_output(raw_text):
+    # Split the main text and the answer
+    parts = raw_text.split("Answer:")
+    question_block = parts[0].strip()
+    answer = parts[1].strip() if len(parts) > 1 else "?"
+
+    # Extract individual parts
+    question_match = re.search(r"Question:\s*(.*?)(?=A\))", question_block, re.DOTALL)
+    question_text = question_match.group(1).strip() if question_match else "Could not parse question"
+
+    # Extract options
+    options = re.findall(r"([A-D])\)\s*(.*?)(?=([A-D]\)|$))", question_block, re.DOTALL)
+    options_list = [(opt[0], opt[1].strip().replace("\n", " ")) for opt in options]
+
+    return question_text, options_list, answer

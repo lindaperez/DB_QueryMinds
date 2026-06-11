@@ -57,7 +57,7 @@
                         {% if request.user.userprofile.user_type == "student" %}
                         <a href="{% url 'update_profile' %}" class="text-primary">Student Information</a>
                         <div><strong>Full Name:</strong>{{ request.user.first_name }} {{ request.user.last_name }}</div>
-                        <div><strong>Student ID:</strong> {{ request.user.student.pk }}</div>
+                        <div><strong>Student ID:</strong> {{ request.user.student.pk }} - {{ request.user.pk }} </div>
                         <div><strong>Email:</strong> {{ request.user.email }}</div>
                         <div><strong>Registration Date:</strong> {{ request.user.date_joined }}</div>
                         {% elif request.user.userprofile.user_type == "instructor"%}

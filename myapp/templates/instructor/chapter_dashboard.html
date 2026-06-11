@@ -116,11 +116,21 @@
                   <h5 class="mb-0 text-primary">Generated SQL Question</h5>
               </div>
               <div class="card-body">
-                  <p class="mb-2"><strong>Question:</strong></p>
-                  <p class="text-dark">{{ question }}</p>
+                  <p><strong>Question:</strong></p>
+                  <p>{{ question }}</p>
           
-                  <p class="mb-2"><strong>Answer:</strong></p>
-                  <pre class="bg-light p-3 rounded"><code>{{ answer }}</code></pre>
+                  <ol type="A" class="mt-3">
+                      {% for letter, option in multiple_options %}
+                      <li class="mb-2">
+                          <pre class="bg-light p-2 rounded"><code>{{ option }}</code></pre>
+                          {% if letter == correct_option %}
+                              <span class="badge bg-success text-white">✔ Correct Answer</span>
+                          {% endif %}
+                      </li>
+                      {% endfor %}
+                  </ol>
+                  <p><strong>Answer:</strong></p>
+                  <p>{{ answer }}</p>
               </div>
           </div>
           {% endif %}
